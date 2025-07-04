@@ -106,7 +106,7 @@ Feel free to fork, clone, suggest hugot lines, or improve the UI/UX. Pinoy devs 
 bash
 Copy
 Edit
-git clone https://github.com/yourusername/himigtube.git
+git clone https://github.com/fredrexsalac/himigtube.git
 Then run:
 
 bash
