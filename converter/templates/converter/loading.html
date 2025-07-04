@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% load static %}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HimigTube - Loading...</title>
+  <link rel="stylesheet" href="{% static 'converter/css/loading.css' %}" />
+</head>
+<body>
+  <div class="loading-screen">
+    <img src="{% static 'converter/loading/loading.gif' %}" alt="Loading..." class="loading-gif" />
+
+    <p class="loading-text">⏳ Kumokonekta sa <strong>HimigTube</strong>…</p>
+
+    <!-- 🔥 Hyperblend Animated Loading Bar with Percentage -->
+    <div class="loading-bar">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <p class="progress-percent" id="progressText">0%</p>
+
+    <p class="offline-msg" id="offlineMsg">🚫 Walang internet connection. Susubukang muli...</p>
+  </div>
+
+<script>
+  let progress = 0;
+  const progressBar = document.querySelector('.progress-bar');
+  const percentText = document.querySelector('.progress-percent');
+  const offlineMsg = document.getElementById('offlineMsg');
+
+  function updateProgress() {
+    if (!navigator.onLine) {
+      offlineMsg.style.display = 'block';
+      setTimeout(checkConnection, 3000);
+      return;
+    }
+
+    offlineMsg.style.display = 'none';
+    progress += Math.random() * 2; // Slower growth, more like 20MB loading
+    if (progress > 100) progress = 100;
+
+    progressBar.style.width = `${progress}%`;
+    percentText.innerText = `${Math.floor(progress)}%`;
+
+    if (progress < 100) {
+      setTimeout(updateProgress, 100); // 100ms steps
+    } else {
+      setTimeout(() => {
+        window.location.href = "{% url 'converter:home' %}";
+      }, 800); // small delay for realism
+    }
+  }
+
+  function checkConnection() {
+    if (navigator.onLine) {
+      updateProgress(); // Start bar when online
+    } else {
+      offlineMsg.style.display = 'block';
+      setTimeout(checkConnection, 2000); // Retry
+    }
+  }
+
+  checkConnection();
+</script>
+
+
+</body>
+</html>

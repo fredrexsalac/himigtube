@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	{% load static %}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HimigTube - YouTube to MP3</title>
+  <link rel="stylesheet" href="{% static 'converter/css/styles.css' %}" />
+  <link rel="icon" href="{% static 'converter/logo/logo.png' %}" />
+  <link rel="stylesheet" href="{% static 'converter/css/process.css' %}">
+</head>
+<body>
+  <!-- 🔄 Loading Spinner (hidden by default) -->
+  <div id="loading" class="loading hidden">
+    <div class="spinner"></div>
+    <p class="loading-comment">💬 Hang tight, your MP3 is almost ready…</p>
+  </div>
+
+  <!-- 🌅 Header -->
+  <header class="header">
+    <img src="{% static 'converter/logo/logo.png' %}" alt="HimigTube Logo" class="logo" />
+    <h1 class="title animate-fade">HimigTube</h1>
+    <p class="subtitle">Pinoy YouTube to MP3 Downloader 🇵🇭</p>
+  </header>
+
+  <!-- 🔍 Search Form -->
+  <main class="main-content animate-slide">
+    <form method="GET" action="" class="search-form">
+      <input type="text" name="query" placeholder="Maghanap ng kanta..." required class="search-input" />
+      <button type="submit" class="search-btn">🎵 Search</button>
+    </form>
+
+    {% if results %}
+    <!-- 🎶 Display search results -->
+    <div class="results">
+	{% for result in results %}
+	  <div class="result-item animate-pop">
+	    <div class="result-text">
+	      <h3 class="song-title">{{ result.title }}</h3>
+	      <p class="song-duration">⏱️ {{ result.duration }}</p>
+	      <form method="POST" action="{% url 'converter:process' %}">
+			  {% csrf_token %}
+			  <input type="hidden" name="video_url" value="{{ result.url }}">
+			  <button type="submit" class="convert-btn">🎵 Convert to MP3</button>
+		  </form>
+	    </div>
+	    <div class="thumbnail">
+	      <img src="{{ result.thumbnail }}" alt="Thumbnail" class="result-thumb" />
+	    </div>
+	  </div>
+	{% endfor %}
+    </div>
+    {% endif %}
+  </main>
+
+  <!-- 🌐 Followed by -->
+  <footer class="footer animate-fade">
+    <p>Inspired by <a href="https://ytmp3.as" target="_blank">YTMP3.as</a> and made for Filipino music lovers. ❤️</p>
+    <p>&copy; 2025 HimigTube. All rights reserved. This Website is Originally Made By a Computer Science Student</p>
+	<button id="infoBtn" class="info-btn">ℹ️ About / Info / Author</button>
+  </footer>
+
+<!-- 🪟 Info Modal -->
+<div id="infoModal" class="modal hidden">
+  <div class="modal-content animate-fade" style="max-height: 90vh; overflow-y: auto;">
+    <span class="close-btn" id="closeModal">&times;</span>
+
+    <!-- 🌅 Inline HimigTube Logo (Large) -->
+    <div style="text-align: center; margin-bottom: 15px;">
+      <img src="{% static 'converter/logo/logo.png' %}" alt="HimigTube Logo" style="width: 200px; height: auto;" />
+    </div>
+
+    <h2>About HimigTube</h2>
+
+    <p><strong>HimigTube</strong> is a Filipino-themed YouTube to MP3 downloader designed to help music lovers — especially Pinoys — find and convert their favorite songs directly from YouTube using a simple keyword search.</p>
+
+    <h3>🔧 How It Works</h3>
+    <ul>
+      <li>🔍 <strong>Step 1:</strong> Type in the title, artist, or lyrics of a song — like "Bini Karera" or "Sino Na" — into the search bar.</li>
+      <li>🎯 <strong>Step 2:</strong> HimigTube searches YouTube behind the scenes and shows you matching results.</li>
+      <li>🎵 <strong>Step 3:</strong> Click "Convert to MP3" beside your chosen song.</li>
+      <li>⏳ <strong>Step 4:</strong> A fun hugot-based progress bar appears while the audio is processed using <code>yt-dlp</code> and <code>FFmpeg</code>.</li>
+      <li>⬇️ <strong>Step 5:</strong> When ready, the MP3 downloads automatically in your browser.</li>
+    </ul>
+
+    <h3>📌 Disclaimer</h3>
+    <p>HimigTube is intended for <strong>personal use only</strong>.</p>
+    <p>All music content is sourced in real-time via YouTube’s public video data. No copyrighted files are hosted on this website. Users are responsible for how they use downloaded content.</p>
+    <p><em>Please support the original artists or YouTubers by streaming or purchasing their music from official platforms whenever possible.</em></p>
+
+    <h3>🙋 About the Developer</h3>
+    <p>🎓 Originally built by a Computer Science student from the Biliran Province State University located in the Philippines 🇵🇭 — this tool is a labor of love inspired by Filipino culture, technology, and of course, music. It’s also inspired by projects like <a href="https://ytmp3.as" target="_blank">YTMP3.as</a>, but designed with extra Pinoy flavor, hugot feels, and interest for Filipino people who are looking to download music with a cleaner experience.</p>
+
+    <h3>📅 Released:</h3>
+    <p>2025 — and made with ❤️ for music lovers and late-night YouTube sessions.</p>
+  </div>
+</div>
+
+
+
+
+
+<!-- 📜 Modal Script -->
+<script>
+  const infoBtn = document.getElementById("infoBtn");
+  const modal = document.getElementById("infoModal");
+  const closeModal = document.getElementById("closeModal");
+
+  infoBtn.onclick = () => modal.classList.remove("hidden");
+  closeModal.onclick = () => modal.classList.add("hidden");
+  window.onclick = (e) => { if (e.target == modal) modal.classList.add("hidden"); };
+</script>
+
+
+  <!-- ⏳ Spinner Script (for future use) -->
+  <script>
+    function showLoading(message = "Converting audio format…") {
+      document.getElementById("loading").classList.remove("hidden");
+      document.querySelector(".loading-comment").innerText = `🔧 ${message}`;
+    }
+  </script>
+</body>
+</html>

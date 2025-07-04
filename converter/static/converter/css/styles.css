@@ -1,0 +1,473 @@
+/* 🎨 HimigTube Main Styles */
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #0033a0, #ce1126, #fcd116, #ffffff);
+  background-size: 300% 300%;
+  animation: wavingFlag 15s ease infinite;
+
+  color: #333;
+  overflow-x: hidden;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  transition: all 0.4s ease-in-out;
+  position: relative;
+}
+
+/* 🔝 Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background-color: #ffd1dc;
+  border-bottom: 3px solid #ff9aac;
+}
+
+.logo {
+  height: 60px;
+}
+
+/* Modal Styles */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal-content {
+  background: #fffdf8;
+  padding: 2rem;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  position: relative;
+  animation: fadeIn 0.4s ease-in-out;
+  scrollbar-width: thin;
+  scroll-behavior: smooth;
+}
+
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 18px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #333;
+}
+
+.info-btn {
+  background-color: #fcb8c0;
+  color: #000;
+  border: none;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  border-radius: 12px;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.info-btn:hover {
+  background-color: #fc9da8;
+}
+
+.title {
+  font-size: 2.5rem;
+  color: #c9184a;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #6e2f2f;
+  margin: 0.5rem 0;
+  text-align: center;
+}
+
+/* 🔍 Search Form */
+.search-form {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1.5rem auto;
+}
+
+.search-input {
+  padding: 0.7rem 1rem;
+  font-size: 1rem;
+  width: 300px;
+  border: 2px solid #ffb3c1;
+  border-radius: 50px;
+  outline: none;
+}
+
+.search-btn {
+  padding: 0.7rem 1.2rem;
+  font-size: 1rem;
+  background-color: #ff4d6d;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.search-btn:hover {
+  background-color: #ff1e4d;
+}
+
+/* 🎶 Results */
+.results {
+  margin: 2rem auto;
+  width: 90%;
+  max-width: 900px;
+}
+
+.result-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff0f5;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  margin-bottom: 1rem;
+  transition: transform 0.2s ease;
+  flex-wrap: wrap;
+}
+
+.result-item:hover {
+  transform: scale(1.01);
+}
+
+.result-item img {
+  width: 100%;
+  max-width: 160px;
+  border-radius: 8px;
+  align-self: flex-end;
+}
+
+
+.thumbnail {
+  flex: 0 0 160px;
+  text-align: right;
+}
+
+
+.result-thumb {
+  width: 100%;
+  max-width: 150px;
+  border-radius: 8px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.result-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.result-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #a1123a;
+}
+
+.result-duration {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.convert-btn {
+  display: inline-block;
+  margin-top: 0.5rem;
+  background-color: #c9184a;
+  color: white;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: background-color 0.3s;
+}
+
+.convert-btn:hover {
+  background-color: #a1123a;
+}
+
+.no-results {
+  text-align: center;
+  color: #888;
+  font-size: 1.1rem;
+  margin-top: 2rem;
+}
+
+/* ⏳ Loading Spinner */
+.loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.85);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.loading.hidden {
+  display: none;
+}
+
+.spinner {
+  border: 6px solid #ffe3ed;
+  border-top: 6px solid #ff4d6d;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+}
+
+.loading-comment {
+  margin-top: 1rem;
+  font-size: 1.1rem;
+  color: #c9184a;
+  font-weight: 500;
+  animation: pulse 2s infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* 🌐 Footer */
+.footer {
+  text-align: center;
+  padding: 2rem 1rem;
+  background-color: #ffe3ed;
+  color: #7b2d3a;
+  font-size: 0.9rem;
+  border-top: 2px solid #ffb3c1;
+  margin-top: auto;
+}
+
+.footer a {
+  color: #ff4d6d;
+  text-decoration: none;
+}
+
+/* 🌟 Animations */
+.animate-fade {
+  animation: fadeIn 1s ease forwards;
+  opacity: 0;
+}
+
+.animate-slide {
+  animation: slideIn 0.8s ease forwards;
+  opacity: 0;
+}
+
+.animate-pop {
+  animation: popIn 0.6s ease forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes popIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes wavingFlag {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Simple fade animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* 📱 Mobile-first Responsive Styles (480px and below) */
+@media (max-width: 480px) {
+  body {
+    padding: 0.5rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: center;
+    padding: 0.8rem;
+    text-align: center;
+  }
+
+  .logo {
+    height: 45px;
+    margin-bottom: 0.5rem;
+  }
+
+  .title {
+    font-size: 1.8rem;
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+  }
+
+  .search-form {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .search-input {
+    width: 90%;
+    font-size: 1rem;
+    padding: 0.6rem 1rem;
+  }
+
+  .search-btn {
+    font-size: 0.95rem;
+    padding: 0.6rem 1.2rem;
+    width: 80%;
+  }
+
+  .result-item {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1rem;
+  }
+
+  .result-thumb {
+    max-width: 130px;
+  }
+
+  .convert-btn {
+    width: 90%;
+    padding: 0.6rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  .modal-content {
+    padding: 1.5rem 1rem;
+    width: 95%;
+    font-size: 0.95rem;
+  }
+
+  .footer {
+    font-size: 0.8rem;
+    padding: 1.2rem;
+  }
+
+  .spinner {
+    width: 50px;
+    height: 50px;
+  }
+
+  .loading-comment {
+    font-size: 0.95rem;
+    padding: 0.5rem;
+  }
+}
+
+/* 📲 Medium Mobile (481px to 767px) */
+@media (min-width: 481px) and (max-width: 767px) {
+  .header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .logo {
+    height: 50px;
+    margin-bottom: 0.5rem;
+  }
+
+  .search-input {
+    width: 80%;
+  }
+
+  .search-btn {
+    width: 70%;
+  }
+
+  .result-item {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .result-thumb {
+    max-width: 140px;
+  }
+
+  .convert-btn {
+    width: 75%;
+  }
+
+  .modal-content {
+    width: 92%;
+  }
+
+  .footer {
+    font-size: 0.9rem;
+  }
+}
+
+/* 💻 Tablets and small laptops (768px to 991px) */
+@media (min-width: 768px) and (max-width: 991px) {
+  .search-form {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .search-input {
+    width: 300px;
+  }
+
+  .result-item {
+    flex-wrap: wrap;
+  }
+
+  .convert-btn {
+    padding: 0.5rem 1.2rem;
+  }
+}

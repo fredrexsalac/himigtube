@@ -1,0 +1,113 @@
+{% extends "converter/base.html" %}
+
+{% load static %}
+
+{% block title %}Download Ready - HimigTube{% endblock %}
+
+{% block content %}
+
+<!-- 🎉 Main Conversion Container -->
+<div class="result-container animate-fade">
+  <h2>🎵 Na-convert na: {{ title }}</h2>
+
+  {% if thumbnail %}
+    <img src="{{ thumbnail }}" alt="Thumbnail" class="result-thumb" />
+  {% endif %}
+
+  <!-- 🧼 Cat Laundry Meme (will be hidden after processing) -->
+  <div class="meme-container" id="memeContainer">
+    <div class="tenor-gif-embed" data-postid="6062928582326868864" data-share-method="host" data-aspect-ratio="0.919679" data-width="100%">
+      <a href="https://tenor.com/view/cat-catlaun-wash-washed-laundry-gif-6062928582326868864">Cat Catlaun GIF</a>
+      from <a href="https://tenor.com/search/cat-gifs">Cat GIFs</a>
+    </div>
+    <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
+  </div>
+
+  <!-- 📊 Loading Progress Section -->
+  <div class="loading-section">
+    <p class="loading-message">⏳ Sandali lang ha… kinoconvert pa.</p>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <!-- ✅ Download MP3 Area (includes HimigTube branding now) -->
+  <div class="download-area hidden" id="downloadArea">
+    <!-- 🌅 HimigTube Logo + Text inside card -->
+    <div class="result-header">
+      <img src="{% static 'converter/logo/logo.png' %}" alt="HimigTube Logo" class="result-logo">
+      <h1 class="result-title">HimigTube</h1>
+      <p class="result-subtitle">Pinoy YouTube to MP3 Converter 🇵🇭</p>
+    </div>
+
+    <p class="success-text">✅ Handa na ang iyong MP3!</p>
+    <a href="{{ download_url }}" class="download-btn" download>
+      ⬇️ I-download ang MP3
+    </a>
+    <div class="back-home">
+      <a href="{% url 'converter:home' %}" class="home-link">⬅️ Bumalik sa Home</a>
+    </div>
+  </div>
+
+  <!-- 🔁 Hugot Lines + Progress Simulation Script -->
+  <script>
+    let progress = 0;
+    const fill = document.getElementById("progressFill");
+    const area = document.getElementById("downloadArea");
+    const commentText = document.querySelector(".loading-message");
+    const meme = document.getElementById("memeContainer");
+
+    const hugotLines = [
+    "💬 Iniintindi ka pa rin niya kahit hindi mo na siya kinakausap...",
+    "🔧 Hinahanap ang tamang bitrate… parang hanap mo sa taong totoo sa'yo.",
+    "🎶 Naghihintay ng pag-ibig... este, ng MP3 mo.",
+    "🌀 Sinasala ang ingay — tulad ng mga red flag sa relasyon.",
+    "⏳ Parang love life mo, medyo matagal… pero darating din.",
+    "🎧 Tinitimpla ang quality — para hindi ka na mag-settle sa less than 320kbps.",
+    "📀 Niluluto pa… parang adobo ng feelings.",
+    "🔄 Reprocessing... kasi minsan kailangan mo rin ng second chance.",
+    "💔 Nag-buffer ka rin ba nung iniwan ka niya?",
+    "🎚️ I-adjust natin… baka masyadong mahina ang pagmamahal.",
+    "📼 Minsan, kailangan mo lang i-rewind para ma-realize ang lahat.",
+    "🔊 Hindi lahat ng malakas, totoo. Minsan, maingay lang.",
+    "📻 Si Lizza daw mahilig sa OPM... pero ikaw, baka 'di niya pinapakinggan.",
+    "💿 Gusto mo siyang i-play ulit, pero may takot kang baka ma-skip ka na naman.",
+    "💌 Hindi lahat ng draft nai-send. Minsan, tulad ng feelings mo kay Lizza.",
+    "🧃 Chill ka lang… parang si Lizza minsan, tahimik pero mabigat sa damdamin.",
+    "🧩 Kung siya ang missing piece mo, baka siya rin ang ayaw nang ma-restore.",
+    "📱 Kahit i-convert mo lahat ng songs, 'di pa rin siya babalik.",
+    "🎞️ Replay ka nang replay… pero 'yung memories lang talaga ang bumabalik.",
+    "☁️ MP3 na nga… pero 'yung closure, naka-cloud pa rin."
+  ];
+
+
+    // 💬 Change hugot line every 2.5s
+    let commentIndex = 0;
+    const commentChanger = setInterval(() => {
+      commentText.textContent = hugotLines[commentIndex % hugotLines.length];
+      commentIndex++;
+    }, 2500);
+
+    // 📊 Simulate slow loading progress
+    const simulateProgress = setInterval(() => {
+      progress += Math.random() * 20;
+      fill.style.width = Math.min(progress, 100) + "%";
+
+      if (progress >= 100) {
+        clearInterval(simulateProgress);
+        clearInterval(commentChanger);
+        document.querySelector(".loading-section").style.display = "none";
+        area.classList.remove("hidden");
+        if (meme) meme.style.display = "none"; // Hide meme when done
+
+        // ⬇️ Auto-download
+        setTimeout(() => {
+          const dlBtn = document.querySelector(".download-btn");
+          if (dlBtn) dlBtn.click();
+        }, 1000);
+      }
+    }, 400);
+  </script>
+</div>
+
+{% endblock %}
