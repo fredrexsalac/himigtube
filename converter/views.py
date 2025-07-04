@@ -78,6 +78,7 @@ def process(request):
             ydl_opts = {
                 'format': 'bestaudio/best',
                 'outtmpl': output_template,
+                'cookiefile': os.path.join(settings.BASE_DIR, 'converter', 'yt_cookies.txt'),  # 👈 Add this line
                 'postprocessors': [{
                     'key': 'FFmpegExtractAudio',
                     'preferredcodec': 'mp3',
