@@ -1,32 +1,46 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  {% load static %}
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HimigTube - Loading...</title>
-  <link rel="stylesheet" href="{% static 'converter/css/loading.css' %}" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HimigTube is Loading...</title>
+  <link rel="stylesheet" href="{% static 'converter/css/styles.css' %}">
+  <link rel="stylesheet" href="{% static 'converter/css/process.css' %}">
+  <link rel="icon" href="{% static 'converter/logo/logo.png' %}" />
 </head>
 <body>
-  <div class="loading-screen">
-    <img src="{% static 'converter/loading/loading.gif' %}" alt="Loading..." class="loading-gif" />
 
-    <p class="loading-text">⏳ Kumokonekta sa <strong>HimigTube</strong>…</p>
+<div class="loading">
+  <img src="{% static 'converter/logo/logo.png' %}" alt="HimigTube Logo" class="logo">
+  <h1 class="loading-text">⏳ Loading HimigTube...</h1>
+  <p class="loading-comment" id="loadingComment">💬 Hinahanap ang pinakabagong OPM hit...</p>
 
-    <!-- 🔥 Hyperblend Animated Loading Bar with Percentage -->
-    <div class="loading-bar">
-      <div class="progress-bar" id="progressBar"></div>
-    </div>
-    <p class="progress-percent" id="progressText">0%</p>
-
-    <p class="offline-msg" id="offlineMsg">🚫 Walang internet connection. Susubukang muli...</p>
+  <div class="progress-container">
+    <div class="progress-bar" id="progressBar"></div>
   </div>
+  <div class="progress-percent" id="percentText">0%</div>
+
+  <p id="offlineMsg" class="offline-warning">🚫 No Internet Connection. Waiting to reconnect...</p>
+</div>
 
 <script>
   let progress = 0;
-  const progressBar = document.querySelector('.progress-bar');
-  const percentText = document.querySelector('.progress-percent');
+  const progressBar = document.getElementById('progressBar');
+  const percentText = document.getElementById('percentText');
   const offlineMsg = document.getElementById('offlineMsg');
+  const loadingComment = document.getElementById('loadingComment');
+
+  const comments = [
+    "🎶 Kinukuha ang lyrics ni Moira...",
+    "💡 Naglo-load ng OPM feels...",
+    "🎧 Naghahanap ng kanta mula kay SB19...",
+    "📡 Kumokonekta sa YouTube servers...",
+    "🧠 Nag-iisip ng tamang hugot line...",
+    "🎤 Hinahanap si Zack Tabudlo...",
+    "📀 Naglalagay ng MP3 tag...",
+    "⏳ Sandali lang, malapit na..."
+  ];
 
   function updateProgress() {
     if (!navigator.onLine) {
@@ -36,33 +50,37 @@
     }
 
     offlineMsg.style.display = 'none';
-    progress += Math.random() * 2; // Slower growth, more like 20MB loading
+    progress += Math.random() * 2;
     if (progress > 100) progress = 100;
 
     progressBar.style.width = `${progress}%`;
     percentText.innerText = `${Math.floor(progress)}%`;
 
+    if (Math.floor(progress) % 20 === 0) {
+      const randomIndex = Math.floor(Math.random() * comments.length);
+      loadingComment.innerText = comments[randomIndex];
+    }
+
     if (progress < 100) {
-      setTimeout(updateProgress, 100); // 100ms steps
+      setTimeout(updateProgress, 80);
     } else {
       setTimeout(() => {
         window.location.href = "{% url 'converter:home' %}";
-      }, 800); // small delay for realism
+      }, 800);
     }
   }
 
   function checkConnection() {
     if (navigator.onLine) {
-      updateProgress(); // Start bar when online
+      updateProgress();
     } else {
       offlineMsg.style.display = 'block';
-      setTimeout(checkConnection, 2000); // Retry
+      setTimeout(checkConnection, 2000);
     }
   }
 
   checkConnection();
 </script>
-
 
 </body>
 </html>
