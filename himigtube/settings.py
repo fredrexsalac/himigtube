@@ -11,7 +11,7 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # 🚨 SECURITY SETTINGS
-SECRET_KEY = 'django-insecure-u9-nhe%w41$#iqc&a&sv%xtunspr_+tk&l36gqnh1mckf638r0'
+SECRET_KEY = 'u9-nhe%w41$#iqc&a&sv%xtunspr_+tk&l36gqnh1mckf638r0'
 DEBUG = False
 ALLOWED_HOSTS = ['himigtube.onrender.com']
 
