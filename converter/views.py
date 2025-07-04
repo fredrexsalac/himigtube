@@ -10,6 +10,9 @@ import re
 def sanitize_filename(name):
     return re.sub(r'[\\/*?:"<>|]', "_", name)
 
+def redirect_to_loading(request):
+    return redirect('converter:loading')
+
 # 🔄 Loading Screen View
 def loading_screen(request):
     return render(request, 'converter/loading.html')
