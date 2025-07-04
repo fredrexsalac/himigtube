@@ -6,6 +6,7 @@ from . import views
 app_name = 'converter'
 
 urlpatterns = [
+	path('', views.redirect_to_loading), 
 	path('loading/', views.loading_screen, name='loading'),
     path('', views.home, name='home'),
     path('result/', views.result, name='result'),
