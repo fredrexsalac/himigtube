@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # 🚨 SECURITY SETTINGS
 SECRET_KEY = 'u9-nhe%w41$#iqc&a&sv%xtunspr_+tk&l36gqnh1mckf638r0'
 DEBUG = False
-ALLOWED_HOSTS = ['himigtube.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['himigtube.com', 'localhost', '127.0.0.1']
 
 # ✅ Installed apps
 INSTALLED_APPS = [
