@@ -49,19 +49,24 @@ def process(request):
             return redirect("converter:home")
 
         unique_id = str(uuid.uuid4())[:8]
-        outtmpl = os.path.join(settings.MEDIA_ROOT, f"%(title).40s_{unique_id}.%(ext)s")
+        base_outtmpl = os.path.join(settings.MEDIA_ROOT, f"%(title).40s_{unique_id}.%(ext)s")
 
         ydl_opts = {
             'format': 'bestaudio/best',
-            'outtmpl': outtmpl,
+            'outtmpl': base_outtmpl,
             'postprocessors': [
-                {
+                {   # Step 1: Extract audio to mp3
                     'key': 'FFmpegExtractAudio',
                     'preferredcodec': 'mp3',
                     'preferredquality': bitrate,
+                },
+                {   # Step 2: Convert to mono audio
+                    'key': 'FFmpegAudioConvertor',
+                    'preferredcodec': 'mp3',
+                    'preferredquality': bitrate,
+                    'nopostoverwrites': False
                 }
             ],
-            'postprocessor_args': ['-ac', '1'],  # force mono audio here
             'noplaylist': True,
             'quiet': True,
             'nocheckcertificate': True,
@@ -78,29 +83,26 @@ def process(request):
             raw_title = info.get("title") or "Unknown"
             title = sanitize_filename(raw_title)
 
+            # Determine final file path
             output_path = None
-            # yt-dlp puts downloaded files info here
             if 'requested_downloads' in info and info['requested_downloads']:
                 output_path = info['requested_downloads'][0].get('filepath')
-            # fallback to _filename if available
             if not output_path:
                 output_path = info.get('_filename')
 
-            # fallback if output_path is None or not mp3
             if not output_path or not str(output_path).lower().endswith('.mp3'):
                 file_name = f"{title}_{unique_id}.mp3"
+                output_path = os.path.join(settings.MEDIA_ROOT, file_name)
             else:
                 file_name = os.path.basename(output_path)
 
             download_url = f"{settings.MEDIA_URL}{file_name}"
-            thumbnail = info.get("thumbnail", "")
-            duration = info.get("duration", 0)
 
             return render(request, "converter/result.html", {
                 "title": raw_title,
                 "download_url": download_url,
-                "thumbnail": thumbnail,
-                "duration": duration,
+                "thumbnail": info.get("thumbnail", ""),
+                "duration": info.get("duration", 0),
                 "success": True,
             })
 
@@ -109,7 +111,7 @@ def process(request):
             return render(request, "converter/result.html", {
                 "title": "Download Failed",
                 "download_url": "",
-                "thumbnail": "https://media.tenor.com/IHdlTRsmcS4AAAAC/sad-cat.gif",  # Sad cat fallback
+                "thumbnail": "https://media.tenor.com/IHdlTRsmcS4AAAAC/sad-cat.gif",
                 "duration": "",
                 "success": False,
                 "error": "❌ Conversion failed. Please try again with a different video or check your connection.",
