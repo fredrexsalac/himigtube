@@ -7,8 +7,8 @@ import os, uuid, re
 def sanitize_filename(name):
     return re.sub(r'[\\/*?:"<>|]', "_", name)
 
-def redirect_to_loading(request):
-    return redirect('converter:loading')
+def loading_screen(request):
+    return render(request, 'converter/loading.html')
 
 def home(request):
     query = request.GET.get('query', '')
