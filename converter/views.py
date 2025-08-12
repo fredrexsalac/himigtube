@@ -58,18 +58,13 @@ def process(request):
             'format': 'bestaudio/best',
             'outtmpl': base_outtmpl,
             'postprocessors': [
-                {   # Step 1: Extract audio to mp3
+                {
                     'key': 'FFmpegExtractAudio',
                     'preferredcodec': 'mp3',
                     'preferredquality': bitrate,
-                },
-                {   # Step 2: Convert to mono audio
-                    'key': 'FFmpegAudioConvertor',
-                    'preferredcodec': 'mp3',
-                    'preferredquality': bitrate,
-                    'nopostoverwrites': False
                 }
             ],
+            'postprocessor_args': ['-ac', '1'],  # ✅ mono audio
             'noplaylist': True,
             'quiet': True,
             'nocheckcertificate': True,
@@ -86,16 +81,14 @@ def process(request):
             raw_title = info.get("title") or "Unknown"
             title = sanitize_filename(raw_title)
 
-            # Determine final file path
             output_path = None
             if 'requested_downloads' in info and info['requested_downloads']:
                 output_path = info['requested_downloads'][0].get('filepath')
             if not output_path:
                 output_path = info.get('_filename')
 
-            if not output_path or not str(output_path).lower().endswith('.mp3'):
+            if not output_path or not output_path.lower().endswith('.mp3'):
                 file_name = f"{title}_{unique_id}.mp3"
-                output_path = os.path.join(settings.MEDIA_ROOT, file_name)
             else:
                 file_name = os.path.basename(output_path)
 
