@@ -39,10 +39,10 @@
 	      <h3 class="song-title">{{ result.title }}</h3>
 	      <p class="song-duration">⏱️ {{ result.duration }}</p>
 	      <form method="POST" action="{% url 'converter:process' %}">
-			  {% csrf_token %}
-			  <input type="hidden" name="video_url" value="{{ result.url }}">
-			  <button type="submit" class="convert-btn">🎵 Convert to MP3</button>
-		  </form>
+	        {% csrf_token %}
+	        <input type="hidden" name="video_id" value="{{ result.video_id }}">
+	        <button type="submit" class="convert-btn" onclick="showLoading('Preparing your MP3…')">🎵 Convert to MP3</button>
+	      </form>
 	    </div>
 	    <div class="thumbnail">
 	      <img src="{{ result.thumbnail }}" alt="Thumbnail" class="result-thumb" />
