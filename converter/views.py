@@ -1,48 +1,66 @@
+import os
+import re
+import uuid
+import requests
+from dotenv import load_dotenv
 from django.shortcuts import render, redirect
-from youtubesearchpython import VideosSearch
 from yt_dlp import YoutubeDL
 from django.conf import settings
-import os, uuid, re
 
+# Load environment variables
+load_dotenv()
+RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
+
+# ✅ Sanitize file names for OS safety
 def sanitize_filename(name):
     return re.sub(r'[\\/*?:"<>|]', "_", name)
 
+# ✅ Redirect from `/` to `/loading/`
 def redirect_to_loading(request):
     return redirect('converter:loading')
 
+# ✅ Show loading screen
 def loading_screen(request):
     return render(request, 'converter/loading.html')
 
+# ✅ Search videos using RapidAPI
 def home(request):
     query = request.GET.get('query', '')
     results = []
 
     if query:
-        refined_query = f"{query} official music"
-        videos_search = VideosSearch(refined_query, limit=20)
-        results_data = videos_search.result().get('result', [])
+        url = "https://youtube-search-results.p.rapidapi.com/youtube-search/"
+        params = {"q": f"{query} official music"}
+        headers = {
+            "x-rapidapi-key": RAPIDAPI_KEY,
+            "x-rapidapi-host": "youtube-search-results.p.rapidapi.com"
+        }
 
-        for video in results_data:
-            title = video.get('title', 'Unknown Title')
-            link = video.get('link')
-            thumbnail = video.get('thumbnails')[0]['url'] if video.get('thumbnails') else ''
-            duration = video.get('duration', 'N/A')
+        try:
+            response = requests.get(url, headers=headers, params=params, timeout=10)
+            data = response.json()
 
-            results.append({
-                'title': title,
-                'url': link,
-                'thumbnail': thumbnail,
-                'duration': duration,
-            })
+            for video in data.get("items", []):
+                if video.get("type") == "video":
+                    results.append({
+                        "title": video.get("title", "Unknown Title"),
+                        "url": f"https://www.youtube.com/watch?v={video.get('id')}",
+                        "thumbnail": video.get("bestThumbnail", {}).get("url", ""),
+                        "duration": video.get("duration"),
+                    })
+        except Exception as e:
+            print(f"[RAPIDAPI ERROR]: {e}")
 
     return render(request, 'converter/home.html', {
         'results': results,
         'query': query,
     })
 
+# ✅ Render result page
 def result(request):
     return render(request, 'converter/result.html')
 
+# ✅ Process MP3 conversion
 def process(request):
     if request.method == "POST":
         video_url = request.POST.get("video_url")
