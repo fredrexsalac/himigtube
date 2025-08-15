@@ -123,8 +123,8 @@ Support the developer or download the app:
 Download now. Baka ito na ang closure mo."
 
 📧 Contact
-📬 ko-fi.com/yourname
-📩 Email: himigtube@gmail.com
+📬 ko-fi.com/therealdon
+📩 Email: fredrexsalac@gmail.com
 🧠 Built with 💙 by [The Real Don] – #PinoyProud
 
 
