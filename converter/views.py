@@ -1,11 +1,31 @@
 from django.shortcuts import render, redirect
-from youtubesearchpython import VideosSearch
 from django.http import FileResponse, HttpResponse
-import os, uuid, re, yt_dlp
+from youtubesearchpython import VideosSearch
+import os
+import uuid
+import re
+import yt_dlp
+import logging
 
+# Set up logging
+logger = logging.getLogger(__name__)
+
+# -----------------------------
+# Helper functions
+# -----------------------------
 def sanitize_filename(name):
+    """Replace invalid filename characters with underscores."""
     return re.sub(r'[\\/*?:"<>|]', "_", name)
 
+def get_output_dir():
+    """Ensure the downloads directory exists."""
+    output_dir = "downloads"
+    os.makedirs(output_dir, exist_ok=True)
+    return output_dir
+
+# -----------------------------
+# Views
+# -----------------------------
 def redirect_to_loading(request):
     return redirect('converter:loading')
 
@@ -18,23 +38,28 @@ def home(request):
 
     if query:
         refined_query = f"{query} official music"
-        videos_search = VideosSearch(refined_query, limit=20)
-        results_data = videos_search.result().get('result', [])
+        try:
+            videos_search = VideosSearch(refined_query, limit=20)
+            results_data = videos_search.result().get('result', [])
 
-        for video in results_data:
-            video_id = video.get('id')
-            title = video.get('title', 'Unknown Title')
-            link = f"https://www.youtube.com/watch?v={video_id}"
-            thumbnail = video.get('thumbnails')[0]['url'] if video.get('thumbnails') else ''
-            duration = video.get('duration', 'N/A')
+            for video in results_data:
+                video_id = video.get('id')
+                title = video.get('title', 'Unknown Title')
+                link = f"https://www.youtube.com/watch?v={video_id}"
+                thumbnail = video.get('thumbnails')[0]['url'] if video.get('thumbnails') else ''
+                duration = video.get('duration', 'N/A')
 
-            results.append({
-                'title': title,
-                'url': link,
-                'video_id': video_id,
-                'thumbnail': thumbnail,
-                'duration': duration,
-            })
+                results.append({
+                    'title': title,
+                    'url': link,
+                    'video_id': video_id,
+                    'thumbnail': thumbnail,
+                    'duration': duration,
+                })
+
+        except Exception as e:
+            logger.error(f"Video search failed: {e}")
+            results = []
 
     return render(request, 'converter/home.html', {
         'results': results,
@@ -45,64 +70,55 @@ def result(request):
     return render(request, 'converter/result.html')
 
 def process(request):
-    if request.method == "POST":
-        video_id = request.POST.get("video_id")
+    if request.method != "POST":
+        return redirect("converter:home")
 
-        if not video_id:
-            return redirect("converter:home")
+    video_id = request.POST.get("video_id")
+    if not video_id:
+        return redirect("converter:home")
 
-        video_url = f"https://www.youtube.com/watch?v={video_id}"
+    video_url = f"https://www.youtube.com/watch?v={video_id}"
+    output_dir = get_output_dir()
+    filename = f"{uuid.uuid4()}.mp3"
+    output_path = os.path.join(output_dir, filename)
 
-        # 🔥 Output path (temporary folder for downloads)
-        output_dir = "downloads"
-        os.makedirs(output_dir, exist_ok=True)
+    ydl_opts = {
+        "format": "bestaudio/best",
+        "outtmpl": output_path.replace(".mp3", ".%(ext)s"),
+        "postprocessors": [{
+            "key": "FFmpegExtractAudio",
+            "preferredcodec": "mp3",
+            "preferredquality": "192",
+        }],
+        "quiet": True,
+        "no_warnings": True
+    }
 
-        # Random filename to avoid collisions
-        filename = f"{uuid.uuid4()}.mp3"
-        output_path = os.path.join(output_dir, filename)
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(video_url, download=True)
+            title = info.get("title", "Unknown Title")
 
-        ydl_opts = {
-            "format": "bestaudio/best",
-            "outtmpl": output_path.replace(".mp3", ".%(ext)s"),
-            "postprocessors": [
-                {
-                    "key": "FFmpegExtractAudio",
-                    "preferredcodec": "mp3",
-                    "preferredquality": "192",
-                }
-            ],
-        }
+            # Determine actual downloaded file
+            downloaded_file = output_path.replace(".mp3", f".{info.get('ext', 'mp3')}")
+            if not os.path.exists(downloaded_file):
+                downloaded_file = output_path
 
-        try:
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                info = ydl.extract_info(video_url, download=True)
-                title = info.get("title", "Unknown Title")
+        # Return downloadable file
+        response = FileResponse(
+            open(downloaded_file, "rb"),
+            as_attachment=True,
+            filename=f"{sanitize_filename(title)}.mp3"
+        )
+        return response
 
-                # yt-dlp replaces ext → fix final path
-                final_file = output_path
-                if os.path.exists(output_path.replace(".mp3", ".webm")):
-                    final_file = output_path.replace(".mp3", ".webm")
-                elif os.path.exists(output_path.replace(".mp3", ".m4a")):
-                    final_file = output_path.replace(".mp3", ".m4a")
-
-                final_file = final_file.replace(".webm", ".mp3").replace(".m4a", ".mp3")
-
-            # ✅ Return downloadable file
-            return FileResponse(
-                open(final_file, "rb"),
-                as_attachment=True,
-                filename=f"{sanitize_filename(title)}.mp3"
-            )
-
-        except Exception as e:
-            print(f"[yt-dlp ERROR]: {e}")
-            return render(request, "converter/result.html", {
-                "title": "Download Failed",
-                "download_url": "",
-                "thumbnail": "https://media.tenor.com/IHdlTRsmcS4AAAAC/sad-cat.gif",
-                "duration": "",
-                "success": False,
-                "error": "❌ Conversion failed. Please try again.",
-            })
-
-    return redirect("converter:home")
+    except Exception as e:
+        logger.error(f"[yt-dlp ERROR]: {e}")
+        return render(request, "converter/result.html", {
+            "title": "Download Failed",
+            "download_url": "",
+            "thumbnail": "https://media.tenor.com/IHdlTRsmcS4AAAAC/sad-cat.gif",
+            "duration": "",
+            "success": False,
+            "error": "❌ Conversion failed. Please try again.",
+        })
