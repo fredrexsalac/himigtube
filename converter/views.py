@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import FileResponse, HttpResponse
+from django.http import FileResponse
 from youtubesearchpython import VideosSearch
 import os
 import uuid
@@ -63,7 +63,6 @@ def home(request):
 
         except Exception as e:
             logger.error(f"Video search failed: {e}")
-            results = []
 
     return render(request, 'converter/home.html', {
         'results': results,
@@ -104,22 +103,25 @@ def process(request):
             "preferredcodec": "mp3",
             "preferredquality": "192",
         }],
-        "quiet": False,  # Show progress in console
+        "quiet": True,
         "no_warnings": True,
-        "cookiefile": "cookies.txt",  
-        "nocheckcertificate": True,    
+        "cookiefile": "cookies.txt",
+        "nocheckcertificate": True,
     }
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(video_url, download=True)
             title = info.get("title", "Unknown Title")
-            ext = info.get('ext', 'mp3')
+            ext = "mp3"
             downloaded_file = os.path.join(output_dir, f"{info.get('id')}.{ext}")
 
-            # Fallback if default path fails
+            # Fallback if yt-dlp naming differs
             if not os.path.exists(downloaded_file):
                 downloaded_file = output_path.replace("%(ext)s", "mp3")
+
+            if not os.path.exists(downloaded_file):
+                raise FileNotFoundError("Downloaded file not found.")
 
         return FileResponse(
             open(downloaded_file, "rb"),
@@ -135,7 +137,7 @@ def process(request):
             "thumbnail": "https://media.tenor.com/IHdlTRsmcS4AAAAC/sad-cat.gif",
             "duration": "",
             "success": False,
-            "error": f"❌ Download failed. YouTube may require login. Make sure your cookies.txt is valid. Error: {str(e)}",
+            "error": f"❌ Download failed. YouTube may require login. Check your cookies.txt. Error: {str(e)}",
         })
 
     except Exception as e:
