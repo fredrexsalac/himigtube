@@ -1,11 +1,7 @@
 from django.shortcuts import render, redirect
 from youtubesearchpython import VideosSearch
-from django.conf import settings
-import os, uuid, re, requests
-
-# ✅ Your RapidAPI credentials
-RAPIDAPI_KEY = "52e6b02768msh62880254bc3809fp1f4474jsn915acd488aaa"
-RAPIDAPI_HOST = "youtube-mp36.p.rapidapi.com"
+from django.http import FileResponse, HttpResponse
+import os, uuid, re, yt_dlp
 
 def sanitize_filename(name):
     return re.sub(r'[\\/*?:"<>|]', "_", name)
@@ -35,7 +31,7 @@ def home(request):
             results.append({
                 'title': title,
                 'url': link,
-                'video_id': video_id,  # ✅ store this for conversion
+                'video_id': video_id,
                 'thumbnail': thumbnail,
                 'duration': duration,
             })
@@ -55,45 +51,58 @@ def process(request):
         if not video_id:
             return redirect("converter:home")
 
-        # ✅ Call RapidAPI to convert
-        url = f"https://{RAPIDAPI_HOST}/dl"
-        querystring = {"id": video_id}
-        headers = {
-            "x-rapidapi-key": RAPIDAPI_KEY,
-            "x-rapidapi-host": RAPIDAPI_HOST
+        video_url = f"https://www.youtube.com/watch?v={video_id}"
+
+        # 🔥 Output path (temporary folder for downloads)
+        output_dir = "downloads"
+        os.makedirs(output_dir, exist_ok=True)
+
+        # Random filename to avoid collisions
+        filename = f"{uuid.uuid4()}.mp3"
+        output_path = os.path.join(output_dir, filename)
+
+        ydl_opts = {
+            "format": "bestaudio/best",
+            "outtmpl": output_path.replace(".mp3", ".%(ext)s"),
+            "postprocessors": [
+                {
+                    "key": "FFmpegExtractAudio",
+                    "preferredcodec": "mp3",
+                    "preferredquality": "192",
+                }
+            ],
         }
 
         try:
-            r = requests.get(url, headers=headers, params=querystring)
-            data = r.json()
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info = ydl.extract_info(video_url, download=True)
+                title = info.get("title", "Unknown Title")
 
-            if "link" in data and data["link"]:
-                return render(request, "converter/result.html", {
-                    "title": data.get("title", "Unknown"),
-                    "download_url": data["link"],
-                    "thumbnail": f"https://i.ytimg.com/vi/{video_id}/hqdefault.jpg",
-                    "duration": data.get("duration", ""),
-                    "success": True,
-                })
-            else:
-                return render(request, "converter/result.html", {
-                    "title": "Download Failed",
-                    "download_url": "",
-                    "thumbnail": "https://media.tenor.com/IHdlTRsmcS4AAAAC/sad-cat.gif",
-                    "duration": "",
-                    "success": False,
-                    "error": "❌ Conversion failed. Please try again.",
-                })
+                # yt-dlp replaces ext → fix final path
+                final_file = output_path
+                if os.path.exists(output_path.replace(".mp3", ".webm")):
+                    final_file = output_path.replace(".mp3", ".webm")
+                elif os.path.exists(output_path.replace(".mp3", ".m4a")):
+                    final_file = output_path.replace(".mp3", ".m4a")
+
+                final_file = final_file.replace(".webm", ".mp3").replace(".m4a", ".mp3")
+
+            # ✅ Return downloadable file
+            return FileResponse(
+                open(final_file, "rb"),
+                as_attachment=True,
+                filename=f"{sanitize_filename(title)}.mp3"
+            )
 
         except Exception as e:
-            print(f"[RapidAPI ERROR]: {e}")
+            print(f"[yt-dlp ERROR]: {e}")
             return render(request, "converter/result.html", {
                 "title": "Download Failed",
                 "download_url": "",
                 "thumbnail": "https://media.tenor.com/IHdlTRsmcS4AAAAC/sad-cat.gif",
                 "duration": "",
                 "success": False,
-                "error": "❌ API error. Please try again later.",
+                "error": "❌ Conversion failed. Please try again.",
             })
 
     return redirect("converter:home")
