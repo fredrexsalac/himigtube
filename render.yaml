@@ -2,8 +2,9 @@ services:
   - type: web
     name: himigtube
     env: python
+    plan: free
     buildCommand: |
       apt-get update && apt-get install -y ffmpeg
+      pip install --upgrade pip
       pip install -r requirements.txt
-    startCommand: gunicorn himigtube.wsgi
-    plan: free
+    startCommand: gunicorn himigtube.wsgi:application
