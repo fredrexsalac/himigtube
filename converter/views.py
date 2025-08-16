@@ -73,80 +73,49 @@ def result(request):
     return render(request, 'converter/result.html')
 
 def process(request):
-    if request.method != "POST":
-        return redirect("converter:home")
+    if request.method == "POST":
+        video_url = request.POST.get("video_url")
+        if not video_url:
+            return render(request, "converter/home.html", {"error": "Please enter a YouTube URL."})
 
-    video_id = request.POST.get("video_id")
-    if not video_id:
-        return redirect("converter:home")
+        # Ensure downloads folder exists
+        output_dir = os.path.join(settings.BASE_DIR, "converter", "downloads")
+        os.makedirs(output_dir, exist_ok=True)
+        
+        # Unique temporary filename
+        temp_filename = str(uuid.uuid4())
+        temp_path = os.path.join(output_dir, temp_filename + ".%(ext)s")
 
-    if not cookies_exist():
-        return render(request, "converter/result.html", {
-            "title": "Download Failed",
-            "download_url": "",
-            "thumbnail": "https://media.tenor.com/IHdlTRsmcS4AAAAC/sad-cat.gif",
-            "duration": "",
-            "success": False,
-            "error": "❌ Cookies not found. Please export your YouTube cookies to cookies.txt.",
-        })
+        # yt_dlp options
+        ydl_opts = {
+            "format": "bestaudio/best",
+            "outtmpl": temp_path,
+            "nocheckcertificate": True,
+            "quiet": True,
+            "cookiefile": os.path.join(settings.BASE_DIR, "converter", "cookies.txt"),
+            "postprocessors": [{
+                "key": "FFmpegExtractAudio",
+                "preferredcodec": "mp3",
+                "preferredquality": "192",
+            }],
+        }
 
-    video_url = f"https://www.youtube.com/watch?v={video_id}"
-    output_dir = get_output_dir()
-    temp_filename = f"{uuid.uuid4()}.%(ext)s"
-    output_path = os.path.join(output_dir, temp_filename)
+        try:
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info = ydl.extract_info(video_url, download=True)
+                # Build actual mp3 file path
+                downloaded_file = os.path.splitext(ydl.prepare_filename(info))[0] + ".mp3"
 
-    ydl_opts = {
-        "format": "bestaudio/best",
-        "outtmpl": output_path,
-        "postprocessors": [{
-            "key": "FFmpegExtractAudio",
-            "preferredcodec": "mp3",
-            "preferredquality": "192",
-        }],
-        "quiet": True,
-        "no_warnings": True,
-        "cookiefile": "cookies.txt",
-        "nocheckcertificate": True,
-    }
+            if not os.path.isfile(downloaded_file):
+                return render(request, "converter/home.html", {"error": "Download failed. File not found."})
 
-    try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(video_url, download=True)
-            title = info.get("title", "Unknown Title")
-            ext = "mp3"
-            downloaded_file = os.path.join(output_dir, f"{info.get('id')}.{ext}")
+            # Provide filename to template for download
+            filename = os.path.basename(downloaded_file)
+            return render(request, "converter/home.html", {"success": True, "file": filename})
 
-            # Fallback if yt-dlp naming differs
-            if not os.path.exists(downloaded_file):
-                downloaded_file = output_path.replace("%(ext)s", "mp3")
+        except yt_dlp.utils.DownloadError as e:
+            return render(request, "converter/home.html", {"error": f"Download failed: {str(e)}"})
+        except Exception as e:
+            return render(request, "converter/home.html", {"error": f"An unexpected error occurred: {str(e)}"})
 
-            if not os.path.exists(downloaded_file):
-                raise FileNotFoundError("Downloaded file not found.")
-
-        return FileResponse(
-            open(downloaded_file, "rb"),
-            as_attachment=True,
-            filename=f"{sanitize_filename(title)}.mp3"
-        )
-
-    except yt_dlp.utils.DownloadError as e:
-        logger.error(f"[yt-dlp ERROR]: {e}")
-        return render(request, "converter/result.html", {
-            "title": "Download Failed",
-            "download_url": "",
-            "thumbnail": "https://media.tenor.com/IHdlTRsmcS4AAAAC/sad-cat.gif",
-            "duration": "",
-            "success": False,
-            "error": f"❌ Download failed. YouTube may require login. Check your cookies.txt. Error: {str(e)}",
-        })
-
-    except Exception as e:
-        logger.error(f"[GENERAL ERROR]: {e}")
-        return render(request, "converter/result.html", {
-            "title": "Download Failed",
-            "download_url": "",
-            "thumbnail": "https://media.tenor.com/IHdlTRsmcS4AAAAC/sad-cat.gif",
-            "duration": "",
-            "success": False,
-            "error": "❌ Conversion failed. Please try again.",
-        })
+    return render(request, "converter/home.html")
