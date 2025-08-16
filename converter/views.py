@@ -4,11 +4,9 @@ from youtubesearchpython import VideosSearch
 import os
 import uuid
 import re
-import yt_dlp
-import logging
 
-# Set up logging
-logger = logging.getLogger(__name__)
+RAPIDAPI_KEY = "52e6b02768msh62880254bc3809fp1f4474jsn915acd488aaa"
+RAPIDAPI_HOST = "youtube-audio-video-download.p.rapidapi.com"
 
 # -----------------------------
 # Helper functions
@@ -78,43 +76,45 @@ def process(request):
         if not video_url:
             return render(request, "converter/home.html", {"error": "Please enter a YouTube URL."})
 
-        # Ensure downloads folder exists
-        output_dir = os.path.join(settings.BASE_DIR, "converter", "downloads")
-        os.makedirs(output_dir, exist_ok=True)
-        
-        # Unique temporary filename
-        temp_filename = str(uuid.uuid4())
-        temp_path = os.path.join(output_dir, temp_filename + ".%(ext)s")
-
-        # yt_dlp options
-        ydl_opts = {
-            "format": "bestaudio/best",
-            "outtmpl": temp_path,
-            "nocheckcertificate": True,
-            "quiet": True,
-            "cookiefile": os.path.join(settings.BASE_DIR, "converter", "cookies.txt"),
-            "postprocessors": [{
-                "key": "FFmpegExtractAudio",
-                "preferredcodec": "mp3",
-                "preferredquality": "192",
-            }],
-        }
-
         try:
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                info = ydl.extract_info(video_url, download=True)
-                # Build actual mp3 file path
-                downloaded_file = os.path.splitext(ydl.prepare_filename(info))[0] + ".mp3"
+            # Call RapidAPI
+            response = requests.get(
+                f"https://{RAPIDAPI_HOST}/geturl",
+                params={"video_url": video_url},
+                headers={
+                    "X-Rapidapi-Key": RAPIDAPI_KEY,
+                    "X-Rapidapi-Host": RAPIDAPI_HOST
+                },
+                timeout=15
+            )
+            data = response.json()
 
-            if not os.path.isfile(downloaded_file):
-                return render(request, "converter/home.html", {"error": "Download failed. File not found."})
+            # Check if API returned a valid audio link
+            audio_url = data.get("audio")
+            if not audio_url:
+                return render(request, "converter/home.html", {"error": "Download failed: No audio URL returned."})
 
-            # Provide filename to template for download
-            filename = os.path.basename(downloaded_file)
+            # Prepare downloads folder
+            output_dir = os.path.join(settings.BASE_DIR, "converter", "downloads")
+            os.makedirs(output_dir, exist_ok=True)
+
+            # Generate unique filename
+            filename = str(uuid.uuid4()) + ".mp3"
+            filepath = os.path.join(output_dir, filename)
+
+            # Download the MP3 file from the API link
+            audio_resp = requests.get(audio_url, stream=True)
+            if audio_resp.status_code == 200:
+                with open(filepath, "wb") as f:
+                    for chunk in audio_resp.iter_content(1024):
+                        f.write(chunk)
+            else:
+                return render(request, "converter/home.html", {"error": "Failed to download the audio file."})
+
             return render(request, "converter/home.html", {"success": True, "file": filename})
 
-        except yt_dlp.utils.DownloadError as e:
-            return render(request, "converter/home.html", {"error": f"Download failed: {str(e)}"})
+        except requests.exceptions.RequestException as e:
+            return render(request, "converter/home.html", {"error": f"API request failed: {str(e)}"})
         except Exception as e:
             return render(request, "converter/home.html", {"error": f"An unexpected error occurred: {str(e)}"})
 
