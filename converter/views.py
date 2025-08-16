@@ -92,6 +92,8 @@ def process(request):
         }],
         "quiet": True,
         "no_warnings": True
+        "cookiefile": "cookies.txt",  
+        "nocheckcertificate": True,    
     }
 
     try:
