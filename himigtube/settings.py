@@ -17,6 +17,7 @@ ALLOWED_HOSTS = ['himigtube.onrender.com', 'localhost', '127.0.0.1']
 
 # ✅ Installed apps
 INSTALLED_APPS = [
+    'django.contrib.sitemaps',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
