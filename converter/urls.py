@@ -1,7 +1,6 @@
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-<<<<<<< HEAD
 from . import views
 
 app_name = 'converter'
@@ -14,7 +13,6 @@ urlpatterns = [
     path('process/', views.process, name='process'),
     path('video-upload/', views.video_upload, name='video_upload'),  # video upload processing
     path('api/search-suggestions/', views.search_suggestions, name='search_suggestions'),  # API for search suggestions
-=======
 from django.http import HttpResponse
 from django.contrib.sitemaps.views import sitemap
 from . import views
