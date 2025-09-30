@@ -23,6 +23,7 @@
   <link rel="stylesheet" href="{% static 'converter/css/styles.css' %}" />
   <link rel="icon" href="{% static 'converter/logo/logo.png' %}" />
   <link rel="stylesheet" href="{% static 'converter/css/process.css' %}">
+<<<<<<< HEAD
   
   <!-- 📱 PWA Manifest -->
   <link rel="manifest" href="{% static 'converter/manifest.json' %}">
@@ -34,6 +35,8 @@
   
   <script src="{% static 'converter/js/script.js' %}" defer></script>
   <script src="{% static 'converter/js/pwa.js' %}" defer></script>
+=======
+>>>>>>> 455186ee1e1999f6a82cd6b814f12b63252e2c70
 </head>
 <body>
   <!-- 🔄 Loading Spinner (hidden by default) -->
@@ -49,6 +52,7 @@
     <p class="subtitle">Pinoy YouTube to MP3 Downloader 🇵🇭</p>
   </header>
 
+<<<<<<< HEAD
   <!-- 🎛️ Navigation Menu -->
   <nav class="nav-menu animate-slide">
     <div class="nav-container">
@@ -241,6 +245,36 @@
         </div>
       </div>
     </div>
+=======
+  <!-- 🔍 Search Form -->
+  <main class="main-content animate-slide">
+    <form method="GET" action="" class="search-form">
+      <input type="text" name="query" placeholder="Maghanap ng kanta..." required class="search-input" />
+      <button type="submit" class="search-btn">🎵 Search</button>
+    </form>
+
+    {% if results %}
+    <!-- 🎶 Display search results -->
+    <div class="results">
+	{% for result in results %}
+	  <div class="result-item animate-pop">
+	    <div class="result-text">
+	      <h3 class="song-title">{{ result.title }}</h3>
+	      <p class="song-duration">⏱️ {{ result.duration }}</p>
+	      <form method="POST" action="{% url 'converter:process' %}">
+	        {% csrf_token %}
+	        <input type="hidden" name="video_id" value="{{ result.video_id }}">
+	        <button type="submit" class="convert-btn" onclick="showLoading('Preparing your MP3…')">🎵 Convert to MP3</button>
+	      </form>
+	    </div>
+	    <div class="thumbnail">
+	      <img src="{{ result.thumbnail }}" alt="Thumbnail" class="result-thumb" />
+	    </div>
+	  </div>
+	{% endfor %}
+    </div>
+    {% endif %}
+>>>>>>> 455186ee1e1999f6a82cd6b814f12b63252e2c70
   </main>
 
   <!-- 🌐 Followed by -->
@@ -248,7 +282,10 @@
     <p>Inspired by <a href="https://ytmp3.as" target="_blank">YTMP3.as</a> and made for Filipino music lovers. ❤️</p>
     <p>&copy; August 13, 2025 (HimigTube). All rights reserved. This Website is Originally Made By a Computer Science Student</p>
 	<button id="infoBtn" class="info-btn">ℹ️ About / Info / Author</button>
+<<<<<<< HEAD
 	<span class="version-text">Version 1.2</span>
+=======
+>>>>>>> 455186ee1e1999f6a82cd6b814f12b63252e2c70
   </footer>
 
 <!-- 🪟 Info Modal -->
@@ -267,7 +304,11 @@
 
     <h3>🔧 How It Works</h3>
     <ul>
+<<<<<<< HEAD
       <li>🔍 <strong>Step 1:</strong> Type in the title, artist, or lyrics of a song — like "Bini Karera" or "Sino Na" — into the search bar.</li>
+=======
+      <li>🔍 <strong>Step 1:</strong> Type in the title, artist, or lyrics of a song — like "Pusong Ligaw" or "Bakit Kaya" — into the search bar.</li>
+>>>>>>> 455186ee1e1999f6a82cd6b814f12b63252e2c70
       <li>🎯 <strong>Step 2:</strong> HimigTube searches YouTube behind the scenes and shows you matching results.</li>
       <li>🎵 <strong>Step 3:</strong> Click "Convert to MP3" beside your chosen song.</li>
       <li>⏳ <strong>Step 4:</strong> A fun hugot-based progress bar appears while the audio is processed using <code>yt-dlp</code> and <code>FFmpeg</code>.</li>
@@ -284,6 +325,7 @@
 
     <h3>📅 Released:</h3>
     <p> August 13, 2025 (HimigTube). — and made with ❤️ for music lovers and late-night YouTube sessions. Enjoy Listening People!</p>
+<<<<<<< HEAD
     <p></p>
 
     <h3>🆕 Version 1.2 Updates</h3>
@@ -345,5 +387,33 @@
   </div>
 </div>
 
+=======
+  </div>
+</div>
+
+
+
+
+
+<!-- 📜 Modal Script -->
+<script>
+  const infoBtn = document.getElementById("infoBtn");
+  const modal = document.getElementById("infoModal");
+  const closeModal = document.getElementById("closeModal");
+
+  infoBtn.onclick = () => modal.classList.remove("hidden");
+  closeModal.onclick = () => modal.classList.add("hidden");
+  window.onclick = (e) => { if (e.target == modal) modal.classList.add("hidden"); };
+</script>
+
+
+  <!-- ⏳ Spinner Script (for future use) -->
+  <script>
+    function showLoading(message = "Converting audio format…") {
+      document.getElementById("loading").classList.remove("hidden");
+      document.querySelector(".loading-comment").innerText = `🔧 ${message}`;
+    }
+  </script>
+>>>>>>> 455186ee1e1999f6a82cd6b814f12b63252e2c70
 </body>
 </html>

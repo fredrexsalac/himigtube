@@ -12,11 +12,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # 🚨 SECURITY SETTINGS
 SECRET_KEY = 'u9-nhe%w41$#iqc&a&sv%xtunspr_+tk&l36gqnh1mckf638r0'
+<<<<<<< HEAD
 DEBUG = True
 ALLOWED_HOSTS = ['himigtube.onrender.com', 'localhost', '127.0.0.1', '192.168.0.252']
 
 # ✅ Installed apps
 INSTALLED_APPS = [
+=======
+DEBUG = False
+ALLOWED_HOSTS = ['himigtube.onrender.com', 'localhost', '127.0.0.1']
+
+# ✅ Installed apps
+INSTALLED_APPS = [
+    'django.contrib.sitemaps',
+>>>>>>> 455186ee1e1999f6a82cd6b814f12b63252e2c70
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

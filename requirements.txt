@@ -7,6 +7,9 @@ python-dotenv==1.1.1
 gunicorn==21.2.0
 whitenoise==6.6.0
 youtube-search-python==1.6.5
+<<<<<<< HEAD
 whitenoise>=6.0,<7.0
+=======
+>>>>>>> 455186ee1e1999f6a82cd6b814f12b63252e2c70
 dj-database-url==3.0.1
 httpx==0.24.1
