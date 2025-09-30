@@ -17,7 +17,17 @@ urlpatterns = [
     path('process/', views.process, name='process'),
     path('video-upload/', views.video_upload, name='video_upload'),  # video upload processing
     path('api/search-suggestions/', views.search_suggestions, name='search_suggestions'),  # API for search suggestions
-]
+    
+ # Google Search Console verification
+    path("googlef7a4e737ec62d8fa.html", google_verification, name="google-site-verification"),
+
+    # Sitemap
+    path("sitemap.xml", sitemap, {'sitemaps': sitemaps}, name="sitemap"),
+
+    # Robots.txt
+    path("robots.txt", robots_txt, name="robots"),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 app_name = 'converter'
 
 # Google verification
@@ -38,20 +48,3 @@ Sitemap: https://himigtube.onrender.com/sitemap.xml
 sitemaps = {
     'static': StaticViewSitemap,
 }
-
-urlpatterns = [
-    path('', views.redirect_to_loading, name='redirect'),
-    path('loading/', views.loading_screen, name='loading'),
-    path('home/', views.home, name='home'),
-    path('result/', views.result, name='result'),
-    path('process/', views.process, name='process'),
-
-    # Google Search Console verification
-    path("googlef7a4e737ec62d8fa.html", google_verification, name="google-site-verification"),
-
-    # Sitemap
-    path("sitemap.xml", sitemap, {'sitemaps': sitemaps}, name="sitemap"),
-
-    # Robots.txt
-    path("robots.txt", robots_txt, name="robots"),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
