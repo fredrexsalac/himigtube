@@ -23,7 +23,7 @@
 
 ---
 
-## 🆕 Latest Updates (v2.0)
+## 🆕 Latest Updates (v1.2)
 
 ### 📱 **Progressive Web App (PWA) Enhancement**
 - **Mobile App Installation** - Users can now install HimigTube as a native-like app on their phones
