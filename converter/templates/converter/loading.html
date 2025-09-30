@@ -4,7 +4,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<<<<<<< HEAD
   <title>HimigTube</title>
   <link rel="icon" href="{% static 'converter/logo/logo.png' %}">
   <link rel="stylesheet" href="{% static 'converter/css/loading.css' %}">
@@ -43,94 +42,6 @@
   const progressBar = document.getElementById('progressBar');
   const percentText = document.getElementById('percentText');
   const networkInfo = document.getElementById('networkInfo');
-=======
-  <title>HimigTube is Loading...</title>
-  <link rel="icon" href="{% static 'converter/logo/logo.png' %}">
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom right, #fffdfc, #ffe6ec);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
-
-    .loading {
-      text-align: center;
-      max-width: 90%;
-    }
-
-    .logo {
-      width: 100px;
-      height: auto;
-      margin-bottom: 20px;
-    }
-
-    .loading-text {
-      font-size: 24px;
-      margin-bottom: 10px;
-      color: #ff3d6a;
-    }
-
-    .loading-comment {
-      font-size: 16px;
-      margin-bottom: 20px;
-      color: #333;
-    }
-
-    .progress-container {
-      width: 100%;
-      max-width: 300px;
-      height: 12px;
-      background-color: #ddd;
-      border-radius: 6px;
-      overflow: hidden;
-      margin: 0 auto 10px;
-    }
-
-    .progress-bar {
-      height: 100%;
-      width: 0;
-      background: linear-gradient(to right, #ff3d6a, #ffb347);
-      transition: width 0.3s ease-in-out;
-    }
-
-    .progress-percent {
-      font-size: 14px;
-      color: #555;
-      margin-bottom: 10px;
-    }
-
-    .offline-warning {
-      font-size: 14px;
-      color: red;
-      display: none;
-    }
-  </style>
-</head>
-<body>
-
-<div class="loading">
-  <img src="{% static 'converter/logo/logo.png' %}" alt="HimigTube Logo" class="logo">
-  <h1 class="loading-text">⏳ Loading HimigTube...</h1>
-  <p class="loading-comment" id="loadingComment">💬 Hinahanap ang pinakabagong OPM hit...</p>
-
-  <div class="progress-container">
-    <div class="progress-bar" id="progressBar"></div>
-  </div>
-  <div class="progress-percent" id="percentText">0%</div>
-
-  <p id="offlineMsg" class="offline-warning">🚫 No Internet Connection. Waiting to reconnect...</p>
-</div>
-
-<script>
-  let progress = 0;
-  const progressBar = document.getElementById('progressBar');
-  const percentText = document.getElementById('percentText');
->>>>>>> 455186ee1e1999f6a82cd6b814f12b63252e2c70
   const offlineMsg = document.getElementById('offlineMsg');
   const loadingComment = document.getElementById('loadingComment');
 
@@ -142,12 +53,9 @@
     "🧠 Nag-iisip ng tamang hugot line...",
     "🎤 Hinahanap si Zack Tabudlo...",
     "📀 Naglalagay ng MP3 tag...",
-<<<<<<< HEAD
     "⚡ Nag-download ng 30MB na data...",
     "🌐 Nag-sync sa cloud servers...",
     "🔄 Nag-process ng high-quality audio...",
-=======
->>>>>>> 455186ee1e1999f6a82cd6b814f12b63252e2c70
     "⏳ Sandali lang, malapit na..."
   ];
 
@@ -159,7 +67,6 @@
     }
 
     offlineMsg.style.display = 'none';
-<<<<<<< HEAD
     
     const increment = Math.random() * 0.8 + 0.2;
     progress += increment;
@@ -175,34 +82,17 @@
     networkInfo.innerText = `📊 Downloading: ${downloadedMB.toFixed(1)} MB / ${totalMB} MB`;
 
     if (Math.floor(progress) % 15 === 0 && Math.floor(progress) > 0) {
-=======
-    progress += Math.random() * 2;
-    if (progress > 100) progress = 100;
-
-    progressBar.style.width = `${progress}%`;
-    percentText.innerText = `${Math.floor(progress)}%`;
-
-    if (Math.floor(progress) % 20 === 0) {
->>>>>>> 455186ee1e1999f6a82cd6b814f12b63252e2c70
       const randomIndex = Math.floor(Math.random() * comments.length);
       loadingComment.innerText = comments[randomIndex];
     }
 
     if (progress < 100) {
-<<<<<<< HEAD
       setTimeout(updateProgress, 150);
     } else {
       loadingComment.innerText = "✅ Tapos na! Redirecting...";
       setTimeout(() => {
         window.location.href = "{% url 'converter:home' %}";
       }, 1200);
-=======
-      setTimeout(updateProgress, 80);
-    } else {
-      setTimeout(() => {
-        window.location.href = "{% url 'converter:home' %}";
-      }, 800);
->>>>>>> 455186ee1e1999f6a82cd6b814f12b63252e2c70
     }
   }
 
