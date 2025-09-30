@@ -1,25 +1,18 @@
 from django.shortcuts import render, redirect
 from youtubesearchpython import VideosSearch
 from django.conf import settings
-<<<<<<< HEAD
 from django.core.files.storage import default_storage
 from django.http import HttpResponse, FileResponse, JsonResponse
 from collections import Counter
 import os, uuid, re, requests, subprocess, tempfile, json
 
-# Your RapidAPI credentials
-=======
-import os, uuid, re, requests
 
-# ✅ Your RapidAPI credentials
->>>>>>> 455186ee1e1999f6a82cd6b814f12b63252e2c70
 RAPIDAPI_KEY = "52e6b02768msh62880254bc3809fp1f4474jsn915acd488aaa"
 RAPIDAPI_HOST = "youtube-mp36.p.rapidapi.com"
 
 def sanitize_filename(name):
     return re.sub(r'[\\/*?:"<>|]', "_", name)
 
-<<<<<<< HEAD
 def is_kids_content(title):
     """Filter out kids songs and children's content"""
     kids_keywords = [
@@ -377,9 +370,7 @@ def get_discovery_recommendations():
         print(f"[DISCOVERY RECOMMENDATIONS ERROR]: {e}")
     
     return discovery_songs
-
-=======
->>>>>>> 455186ee1e1999f6a82cd6b814f12b63252e2c70
+    
 def redirect_to_loading(request):
     return redirect('converter:loading')
 
@@ -389,7 +380,6 @@ def loading_screen(request):
 def home(request):
     query = request.GET.get('query', '')
     results = []
-<<<<<<< HEAD
     recommended_songs = []
     personalized_recommendations = []
     discovery_recommendations = []
@@ -397,12 +387,9 @@ def home(request):
     if query:
         refined_query = f"{query} official music"
         videos_search = VideosSearch(refined_query, limit=30)
-=======
-
     if query:
         refined_query = f"{query} official music"
         videos_search = VideosSearch(refined_query, limit=20)
->>>>>>> 455186ee1e1999f6a82cd6b814f12b63252e2c70
         results_data = videos_search.result().get('result', [])
 
         for video in results_data:
@@ -410,7 +397,6 @@ def home(request):
             title = video.get('title', 'Unknown Title')
             link = f"https://www.youtube.com/watch?v={video_id}"
             thumbnail = video.get('thumbnails')[0]['url'] if video.get('thumbnails') else ''
-<<<<<<< HEAD
             duration = video.get('duration', 'Unknown')
             
             # Filter out kids content, movie trailers, and live content
@@ -445,7 +431,6 @@ def home(request):
         'recommended_songs': recommended_songs,
         'personalized_recommendations': personalized_recommendations,
         'discovery_recommendations': discovery_recommendations,
-=======
             duration = video.get('duration', 'N/A')
 
             results.append({
@@ -458,7 +443,6 @@ def home(request):
 
     return render(request, 'converter/home.html', {
         'results': results,
->>>>>>> 455186ee1e1999f6a82cd6b814f12b63252e2c70
         'query': query,
     })
 
@@ -471,12 +455,6 @@ def process(request):
 
         if not video_id:
             return redirect("converter:home")
-
-<<<<<<< HEAD
-        # Call RapidAPI to convert with extended timeout for slow internet
-=======
-        # ✅ Call RapidAPI to convert
->>>>>>> 455186ee1e1999f6a82cd6b814f12b63252e2c70
         url = f"https://{RAPIDAPI_HOST}/dl"
         querystring = {"id": video_id}
         headers = {
@@ -485,12 +463,9 @@ def process(request):
         }
 
         try:
-<<<<<<< HEAD
             # Extended timeout for slow internet connections (60 seconds)
             r = requests.get(url, headers=headers, params=querystring, timeout=60)
-=======
             r = requests.get(url, headers=headers, params=querystring)
->>>>>>> 455186ee1e1999f6a82cd6b814f12b63252e2c70
             data = r.json()
 
             if "link" in data and data["link"]:
@@ -508,7 +483,6 @@ def process(request):
                     "thumbnail": "https://media.tenor.com/IHdlTRsmcS4AAAAC/sad-cat.gif",
                     "duration": "",
                     "success": False,
-<<<<<<< HEAD
                     "error": " Conversion failed. Please try again.",
                 })
 
@@ -532,11 +506,8 @@ def process(request):
                 "success": False,
                 "error": " Network connection failed. Check your internet and try again.",
             })
-=======
                     "error": "❌ Conversion failed. Please try again.",
                 })
-
->>>>>>> 455186ee1e1999f6a82cd6b814f12b63252e2c70
         except Exception as e:
             print(f"[RapidAPI ERROR]: {e}")
             return render(request, "converter/result.html", {
@@ -545,7 +516,6 @@ def process(request):
                 "thumbnail": "https://media.tenor.com/IHdlTRsmcS4AAAAC/sad-cat.gif",
                 "duration": "",
                 "success": False,
-<<<<<<< HEAD
                 "error": " API error. Please try again later.",
             })
 
@@ -728,7 +698,6 @@ def video_upload(request):
             })
     
     return redirect("converter:home")
-=======
                 "error": "❌ API error. Please try again later.",
             })
 
