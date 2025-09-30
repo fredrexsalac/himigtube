@@ -696,10 +696,5 @@ def video_upload(request):
                 "success": False,
                 "error": " Upload processing failed. Please try again.",
             })
-    
-    return redirect("converter:home")
-                "error": "❌ API error. Please try again later.",
-            })
 
     return redirect("converter:home")
->>>>>>> 455186ee1e1999f6a82cd6b814f12b63252e2c70
