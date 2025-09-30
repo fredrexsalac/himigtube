@@ -6,7 +6,7 @@ from django.http import HttpResponse, FileResponse, JsonResponse
 from collections import Counter
 import os, uuid, re, requests, subprocess, tempfile, json
 
-
+# Your RapidAPI credentials
 RAPIDAPI_KEY = "52e6b02768msh62880254bc3809fp1f4474jsn915acd488aaa"
 RAPIDAPI_HOST = "youtube-mp36.p.rapidapi.com"
 
@@ -370,7 +370,7 @@ def get_discovery_recommendations():
         print(f"[DISCOVERY RECOMMENDATIONS ERROR]: {e}")
     
     return discovery_songs
-    
+
 def redirect_to_loading(request):
     return redirect('converter:loading')
 
@@ -387,9 +387,6 @@ def home(request):
     if query:
         refined_query = f"{query} official music"
         videos_search = VideosSearch(refined_query, limit=30)
-    if query:
-        refined_query = f"{query} official music"
-        videos_search = VideosSearch(refined_query, limit=20)
         results_data = videos_search.result().get('result', [])
 
         for video in results_data:
@@ -431,18 +428,6 @@ def home(request):
         'recommended_songs': recommended_songs,
         'personalized_recommendations': personalized_recommendations,
         'discovery_recommendations': discovery_recommendations,
-            duration = video.get('duration', 'N/A')
-
-            results.append({
-                'title': title,
-                'url': link,
-                'video_id': video_id,  # ✅ store this for conversion
-                'thumbnail': thumbnail,
-                'duration': duration,
-            })
-
-    return render(request, 'converter/home.html', {
-        'results': results,
         'query': query,
     })
 
@@ -455,6 +440,8 @@ def process(request):
 
         if not video_id:
             return redirect("converter:home")
+
+        # Call RapidAPI to convert with extended timeout for slow internet
         url = f"https://{RAPIDAPI_HOST}/dl"
         querystring = {"id": video_id}
         headers = {
@@ -465,7 +452,6 @@ def process(request):
         try:
             # Extended timeout for slow internet connections (60 seconds)
             r = requests.get(url, headers=headers, params=querystring, timeout=60)
-            r = requests.get(url, headers=headers, params=querystring)
             data = r.json()
 
             if "link" in data and data["link"]:
@@ -506,8 +492,6 @@ def process(request):
                 "success": False,
                 "error": " Network connection failed. Check your internet and try again.",
             })
-                    "error": "❌ Conversion failed. Please try again.",
-                })
         except Exception as e:
             print(f"[RapidAPI ERROR]: {e}")
             return render(request, "converter/result.html", {
@@ -696,5 +680,5 @@ def video_upload(request):
                 "success": False,
                 "error": " Upload processing failed. Please try again.",
             })
-
+    
     return redirect("converter:home")
