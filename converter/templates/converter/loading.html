@@ -1,0 +1,112 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HimigTube</title>
+  <link rel="icon" href="{% static 'converter/logo/logo.png' %}">
+  <link rel="stylesheet" href="{% static 'converter/css/loading.css' %}">
+</head>
+<body>
+
+<!-- Philippines Flag GIF Background -->
+<div class="tenor-gif-embed" data-postid="13458833" data-share-method="host" data-aspect-ratio="1.77778" data-width="100%">
+  <a href="https://tenor.com/view/philippines-philippine-flag-aesha-ashy-gif-13458833">Philippines Flag GIF</a> from 
+  <a href="https://tenor.com/search/philippines-gifs">Philippines GIFs</a>
+</div>
+
+<!-- Content Overlay -->
+<div class="content-overlay">
+  <div class="loading">
+    <img src="{% static 'converter/logo/logo.png' %}" alt="HimigTube Logo" class="logo">
+    <h1 class="loading-text">⏳ Loading HimigTube...</h1>
+    <p class="loading-comment" id="loadingComment">💬 Hinahanap ang pinakabagong OPM hit...</p>
+
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div class="progress-percent" id="percentText">0%</div>
+    <div class="network-info" id="networkInfo" hidden>📊 Downloading: 0 MB / 30 MB</div>
+
+    <p id="offlineMsg" class="offline-warning">🚫 No Internet Connection. Waiting to reconnect...</p>
+  </div>
+</div>
+
+<script type="text/javascript" async src="https://tenor.com/embed.js"></script>
+
+<script>
+  let progress = 0;
+  let downloadedMB = 0;
+  const totalMB = 30;
+  const progressBar = document.getElementById('progressBar');
+  const percentText = document.getElementById('percentText');
+  const networkInfo = document.getElementById('networkInfo');
+  const offlineMsg = document.getElementById('offlineMsg');
+  const loadingComment = document.getElementById('loadingComment');
+
+  const comments = [
+    "🎶 Kinukuha ang lyrics ni Moira...",
+    "💡 Naglo-load ng OPM feels...",
+    "🎧 Naghahanap ng kanta mula kay SB19...",
+    "📡 Kumokonekta sa YouTube servers...",
+    "🧠 Nag-iisip ng tamang hugot line...",
+    "🎤 Hinahanap si Zack Tabudlo...",
+    "📀 Naglalagay ng MP3 tag...",
+    "⚡ Nag-download ng 30MB na data...",
+    "🌐 Nag-sync sa cloud servers...",
+    "🔄 Nag-process ng high-quality audio...",
+    "⏳ Sandali lang, malapit na..."
+  ];
+
+  function updateProgress() {
+    if (!navigator.onLine) {
+      offlineMsg.style.display = 'block';
+      setTimeout(checkConnection, 3000);
+      return;
+    }
+
+    offlineMsg.style.display = 'none';
+    
+    const increment = Math.random() * 0.8 + 0.2;
+    progress += increment;
+    downloadedMB = (progress / 100) * totalMB;
+    
+    if (progress > 100) {
+      progress = 100;
+      downloadedMB = totalMB;
+    }
+
+    progressBar.style.width = `${progress}%`;
+    percentText.innerText = `${Math.floor(progress)}%`;
+    networkInfo.innerText = `📊 Downloading: ${downloadedMB.toFixed(1)} MB / ${totalMB} MB`;
+
+    if (Math.floor(progress) % 15 === 0 && Math.floor(progress) > 0) {
+      const randomIndex = Math.floor(Math.random() * comments.length);
+      loadingComment.innerText = comments[randomIndex];
+    }
+
+    if (progress < 100) {
+      setTimeout(updateProgress, 150);
+    } else {
+      loadingComment.innerText = "✅ Tapos na! Redirecting...";
+      setTimeout(() => {
+        window.location.href = "{% url 'converter:home' %}";
+      }, 1200);
+    }
+  }
+
+  function checkConnection() {
+    if (navigator.onLine) {
+      updateProgress();
+    } else {
+      offlineMsg.style.display = 'block';
+      setTimeout(checkConnection, 2000);
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", checkConnection);
+</script>
+
+</body>
+</html>

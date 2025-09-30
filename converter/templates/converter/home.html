@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	{% load static %}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- ✅ Google Site Verification -->
+  <meta name="google-site-verification" content="KR8YruEgVC8J0KU_BLY24s2wHlIWI8pKFwEqP9-TxAg" />
+	  <!-- ✅ Open Graph (Facebook, Messenger, LinkedIn) -->
+  <meta property="og:title" content="HimigTube – Pinoy YouTube to MP3 Downloader" />
+  <meta property="og:description" content="Easily search, convert, and download your favorite YouTube songs into MP3 — Pinoy style! Fast, free, and hassle-free music for Filipino music lovers." />
+  <meta property="og:image" content="https://himigtube.onrender.com/static/converter/logo/logo.png" />
+  <meta property="og:url" content="https://himigtube.onrender.com" />
+  <meta property="og:type" content="website" />
+
+  <!-- ✅ Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="HimigTube – Pinoy YouTube to MP3 Downloader" />
+  <meta name="twitter:description" content="Easily search, convert, and download your favorite YouTube songs into MP3 — Pinoy style! Fast, free, and hassle-free music for Filipino music lovers." />
+  <meta name="twitter:image" content="https://himigtube.onrender.com/static/converter/logo/logo.png" />
+	
+  <title>HimigTube - YouTube to MP3</title>
+  <link rel="stylesheet" href="{% static 'converter/css/styles.css' %}" />
+  <link rel="icon" href="{% static 'converter/logo/logo.png' %}" />
+  <link rel="stylesheet" href="{% static 'converter/css/process.css' %}">
+  
+  <!-- 📱 PWA Manifest -->
+  <link rel="manifest" href="{% static 'converter/manifest.json' %}">
+  <meta name="theme-color" content="#ff6b9d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="HimigTube">
+  <link rel="apple-touch-icon" href="{% static 'converter/logo/logo.png' %}">
+  
+  <script src="{% static 'converter/js/script.js' %}" defer></script>
+  <script src="{% static 'converter/js/pwa.js' %}" defer></script>
+</head>
+<body>
+  <!-- 🔄 Loading Spinner (hidden by default) -->
+  <div id="loading" class="loading hidden">
+    <div class="spinner"></div>
+    <p class="loading-comment">💬 Hang tight, your MP3 is almost ready…</p>
+  </div>
+
+  <!-- 🌅 Header -->
+  <header class="header">
+    <img src="{% static 'converter/logo/logo.png' %}" alt="HimigTube Logo" class="logo" />
+    <h1 class="title animate-fade">HimigTube</h1>
+    <p class="subtitle">Pinoy YouTube to MP3 Downloader 🇵🇭</p>
+  </header>
+
+  <!-- 🎛️ Navigation Menu -->
+  <nav class="nav-menu animate-slide">
+    <div class="nav-container">
+      <button id="youtubeTab" class="nav-tab active" onclick="switchTab('youtube')">
+        🎵 YouTube to MP3
+      </button>
+      <button id="videoTab" class="nav-tab" onclick="switchTab('video')">
+        � Video to MP3
+      </button>
+    </div>
+  </nav>
+
+  <!-- �🔍 Search Form -->
+  <main class="main-content animate-slide">
+    <!-- YouTube to MP3 Section -->
+    <div id="youtubeSection" class="conversion-section active">
+      <form method="GET" action="" class="search-form" id="searchForm">
+        <div class="search-container">
+          <input type="text" name="query" id="searchInput" placeholder="Maghanap ng kanta..." required class="search-input" autocomplete="off" />
+          <button type="submit" class="search-btn">🎵 Search</button>
+          
+          <!-- 📋 Search Suggestions Dropdown -->
+          <div id="searchSuggestions" class="search-suggestions hidden">
+            <div class="suggestions-list" id="suggestionsList">
+              <!-- Suggestions will be populated here -->
+            </div>
+          </div>
+        </div>
+      </form>
+
+      {% if results %}
+      <!-- 🎶 Display search results -->
+      <div class="results">
+        {% for result in results %}
+        <div class="result-item animate-pop">
+          <div class="result-text">
+            <h3 class="song-title">{{ result.title }}</h3>
+            <p class="song-duration">⏱️ {{ result.duration }}</p>
+            <form method="POST" action="{% url 'converter:process' %}">
+              {% csrf_token %}
+              <input type="hidden" name="video_id" value="{{ result.video_id }}">
+              <button type="submit" class="convert-btn" onclick="showLoading('Preparing your MP3…')">🎵 Convert to MP3</button>
+            </form>
+          </div>
+          <div class="thumbnail">
+            <img src="{{ result.thumbnail }}" alt="Thumbnail" class="result-thumb" />
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      
+      {% elif recommended_songs %}
+      <!-- 🌟 Recommended Filipino Songs -->
+      <div class="recommended-section">
+        <h2 class="recommended-title">🇵🇭 Suggested for you!</h2>
+        <p class="recommended-subtitle">Mga sikat na kanta ngayon! Click mo lang yung gusto mo i-convert 😊</p>
+        
+        <div class="recommended-grid">
+          {% for song in recommended_songs %}
+          <div class="recommended-item animate-pop">
+            <div class="recommended-thumbnail">
+              <img src="{{ song.thumbnail }}" alt="Thumbnail" class="recommended-thumb" />
+              <div class="play-overlay">▶️</div>
+            </div>
+            <div class="recommended-info">
+              <h4 class="recommended-song-title">{{ song.title }}</h4>
+              <p class="recommended-duration">⏱️ {{ song.duration }}</p>
+              <form method="POST" action="{% url 'converter:process' %}">
+                {% csrf_token %}
+                <input type="hidden" name="video_id" value="{{ song.video_id }}">
+                <button type="submit" class="recommended-convert-btn" onclick="showLoading('Converting {{ song.title|truncatechars:20 }}…')">
+                  🎵 Convert
+                </button>
+              </form>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        
+        <div class="search-prompt">
+          <p>💡 <strong>Tip:</strong> Hindi mo makita yung hinahanap mo? Gamitin yung search bar sa taas!</p>
+        </div>
+      </div>
+      
+      {% elif personalized_recommendations %}
+      <!-- 🎯 Personalized Recommendations Based on Search History -->
+      <div class="personalized-section">
+        <h2 class="personalized-title">🎯 Para Sa'yo!</h2>
+        <p class="personalized-subtitle">Base sa mga hinanap mo dati, ito yung mga kanta na baka magustuhan mo! 😊</p>
+        
+        <div class="personalized-grid">
+          {% for song in personalized_recommendations %}
+          <div class="personalized-item animate-pop">
+            <div class="personalized-thumbnail">
+              <img src="{{ song.thumbnail }}" alt="Thumbnail" class="personalized-thumb" />
+              <div class="play-overlay">▶️</div>
+            </div>
+            <div class="personalized-info">
+              <h4 class="personalized-song-title">{{ song.title }}</h4>
+              <p class="personalized-duration">⏱️ {{ song.duration }}</p>
+              <form method="POST" action="{% url 'converter:process' %}">
+                {% csrf_token %}
+                <input type="hidden" name="video_id" value="{{ song.video_id }}">
+                <button type="submit" class="personalized-convert-btn" onclick="showLoading('Converting {{ song.title|truncatechars:20 }}…')">
+                  🎵 Convert
+                </button>
+              </form>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        
+        <div class="search-prompt">
+          <p>💡 <strong>Tip:</strong> Mag-search pa para mas accurate yung recommendations mo!</p>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if discovery_recommendations %}
+      <!-- 🌍 Music Discovery Section -->
+      <div class="recommended-section" style="margin-top: 40px;">
+        <h2 class="recommended-title" style="color: white; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1), 0 0 20px rgba(255, 255, 255, 0.6); animation: title-glow-pulse 3s ease-in-out infinite alternate;">🌍 Discover New Music</h2>
+        <p class="recommended-subtitle">Explore trending songs from Filipino and global artists! Hanap mo yung bagong paboritong kanta 🎶</p>
+        
+        <div class="recommended-grid">
+          {% for song in discovery_recommendations %}
+          <div class="recommended-item animate-pop">
+            <div class="recommended-thumbnail">
+              <img src="{{ song.thumbnail }}" alt="Thumbnail" class="recommended-thumb" />
+              <div class="play-overlay">▶️</div>
+              {% if song.artist_type == 'filipino' %}
+              <div class="artist-badge filipino-badge">🇵🇭 OPM</div>
+              {% else %}
+              <div class="artist-badge global-badge">🌍 Global</div>
+              {% endif %}
+            </div>
+            <div class="recommended-info">
+              <h4 class="recommended-song-title">{{ song.title }}</h4>
+              <p class="recommended-artist">🎤 {{ song.artist }}</p>
+              <p class="recommended-duration">⏱️ {{ song.duration }}</p>
+              <form method="POST" action="{% url 'converter:process' %}">
+                {% csrf_token %}
+                <input type="hidden" name="video_id" value="{{ song.video_id }}">
+                <button type="submit" class="recommended-convert-btn" onclick="showLoading('Converting {{ song.title|truncatechars:20 }}…')">
+                  🎵 Convert
+                </button>
+              </form>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Video to MP3 Section -->
+    <div id="videoSection" class="conversion-section">
+      <div class="upload-container">
+        <h2 class="upload-title">📹 Upload Your Video</h2>
+        <p class="upload-subtitle">I-upload mo yung video file mo at gagawin namin siyang MP3! 🎵</p>
+        
+        <form method="POST" action="{% url 'converter:video_upload' %}" enctype="multipart/form-data" class="upload-form">
+          {% csrf_token %}
+          <div class="file-drop-area" id="fileDropArea">
+            <div class="file-drop-content">
+              <div class="file-drop-icon">📁</div>
+              <p class="file-drop-text">Drag & drop your video here</p>
+              <p class="file-drop-or">or</p>
+              <button type="button" class="file-select-btn" onclick="document.getElementById('videoFile').click()">
+                Choose Video File
+              </button>
+              <input type="file" id="videoFile" name="video_file" accept="video/*" style="display: none;" required>
+            </div>
+          </div>
+          
+          <div class="file-info" id="fileInfo" style="display: none;">
+            <p class="selected-file">Selected: <span id="fileName"></span></p>
+            <p class="file-size">Size: <span id="fileSize"></span></p>
+          </div>
+          
+          <button type="submit" class="upload-convert-btn" onclick="showLoading('Converting your video to MP3…')">
+            🎵 Convert to MP3
+          </button>
+        </form>
+        
+        <div class="upload-info">
+          <h3>📋 Supported Formats:</h3>
+          <p>MP4, AVI, MOV, MKV, WMV, FLV, 3GP, WEBM</p>
+          <p><strong>Max file size:</strong> 100MB</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 🌐 Followed by -->
+  <footer class="footer animate-fade">
+    <p>Inspired by <a href="https://ytmp3.as" target="_blank">YTMP3.as</a> and made for Filipino music lovers. ❤️</p>
+    <p>&copy; August 13, 2025 (HimigTube). All rights reserved. This Website is Originally Made By a Computer Science Student</p>
+	<button id="infoBtn" class="info-btn">ℹ️ About / Info / Author</button>
+	<span class="version-text">Version 1.2</span>
+  </footer>
+
+<!-- 🪟 Info Modal -->
+<div id="infoModal" class="modal hidden">
+  <div class="modal-content animate-fade" style="max-height: 90vh; overflow-y: auto;">
+    <span class="close-btn" id="closeModal">&times;</span>
+
+    <!-- 🌅 Inline HimigTube Logo (Large) -->
+    <div style="text-align: center; margin-bottom: 15px;">
+      <img src="{% static 'converter/logo/logo.png' %}" alt="HimigTube Logo" style="width: 200px; height: auto;" />
+    </div>
+
+    <h2>About HimigTube</h2>
+
+    <p><strong>HimigTube</strong> is a Filipino-themed YouTube to MP3 downloader designed to help music lovers — especially Pinoys — find and convert their favorite songs directly from YouTube using a simple keyword search.</p>
+
+    <h3>🔧 How It Works</h3>
+    <ul>
+      <li>🔍 <strong>Step 1:</strong> Type in the title, artist, or lyrics of a song — like "Bini Karera" or "Sino Na" — into the search bar.</li>
+      <li>🎯 <strong>Step 2:</strong> HimigTube searches YouTube behind the scenes and shows you matching results.</li>
+      <li>🎵 <strong>Step 3:</strong> Click "Convert to MP3" beside your chosen song.</li>
+      <li>⏳ <strong>Step 4:</strong> A fun hugot-based progress bar appears while the audio is processed using <code>yt-dlp</code> and <code>FFmpeg</code>.</li>
+      <li>⬇️ <strong>Step 5:</strong> When ready, the MP3 downloads automatically in your browser.</li>
+    </ul>
+
+    <h3>📌 Disclaimer</h3>
+    <p>HimigTube is intended for <strong>personal use only</strong>.</p>
+    <p>All music content is sourced in real-time via YouTube’s public video data. No copyrighted files are hosted on this website. Users are responsible for how they use downloaded content.</p>
+    <p><em>Please support the original artists or YouTubers by streaming or purchasing their music from official platforms whenever possible.</em></p>
+
+    <h3>🙋 About the Developer</h3>
+    <p>🎓 Originally built by a Computer Science student from the Biliran Province State University located in the Philippines 🇵🇭 — this tool is a labor of love inspired by Filipino culture, technology, and of course, music. It’s also inspired by projects like <a href="https://ytmp3.as" target="_blank">YTMP3.as</a>, but designed with extra Pinoy flavor, hugot feels, and interest for Filipino people who are looking to download music with a cleaner experience.</p>
+
+    <h3>📅 Released:</h3>
+    <p> August 13, 2025 (HimigTube). — and made with ❤️ for music lovers and late-night YouTube sessions. Enjoy Listening People!</p>
+    <p></p>
+
+    <h3>🆕 Version 1.2 Updates</h3>
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 15px; border-left: 4px solid #6c5ce7; line-height: 1.6;">
+      <p><strong>Kumusta mga music lovers! 🎵</strong></p>
+      <p>We listened to your feedback and made HimigTube even better! Here's what happened behind the scenes:</p>
+      
+      <h4 style="color: #6c5ce7; margin-top: 20px;">🧠 The Problem We Solved:</h4>
+      <p>Before, everyone got the same generic recommendations. We thought: <em>"Bakit hindi natin gawing personal?"</em> So we built a smart system that learns from what you search for.</p>
+      
+      <h4 style="color: #6c5ce7; margin-top: 20px;">🔍 Step-by-Step: How It Works Now</h4>
+      <ol style="margin-left: 20px;">
+        <li><strong>You search for music</strong> - Let's say you search for "Ben&Ben" or "SB19"</li>
+        <li><strong>HimigTube remembers</strong> - Your search gets saved in your session (no personal data, just music preferences!)</li>
+        <li><strong>Smart suggestions appear</strong> - As you type, YouTube-style suggestions pop up to help you find songs faster</li>
+        <li><strong>We analyze your taste</strong> - Our system looks at your search history and thinks: "Ah, this person likes OPM bands!"</li>
+        <li><strong>Personalized recommendations</strong> - The "Para Sa'yo" section shows up with similar artists and songs you might love</li>
+        <li><strong>Quality filtering</strong> - We automatically remove kids songs, movie trailers, and full album compilations so you get individual tracks</li>
+      </ol>
+      
+      <h4 style="color: #6c5ce7; margin-top: 20px;">✨ The Magic Behind It:</h4>
+      <ul style="margin-left: 20px;">
+        <li><strong>Session-based learning:</strong> No accounts needed - we remember your preferences during your visit</li>
+        <li><strong>Artist keyword extraction:</strong> We identify artists from your searches and find similar musicians</li>
+        <li><strong>Real-time suggestions:</strong> Connected to YouTube's search API for instant, relevant results</li>
+        <li><strong>Smart filtering:</strong> Excludes content that's not music-focused (kids shows, movies, live concerts)</li>
+      </ul>
+      
+      <h4 style="color: #d63384; margin-top: 20px;">🚀 Added Improvements:</h4>
+      <ul style="margin-left: 20px;">
+        <li><strong>Enhanced Navigation:</strong> Made navigation tabs more visible and accessible for better user experience</li>
+        <li><strong>Improved Search Interface:</strong> Upgraded the search bar design with better alignment and visual appeal on desktop</li>
+        <li><strong>Mobile Experience:</strong> Optimized mobile search button sizing for improved text readability and touch interaction</li>
+        <li><strong>Footer Enhancement:</strong> Improved footer styling and display consistency across mobile devices</li>
+        <li><strong>Progressive Web App:</strong> Added intelligent install prompts for mobile users to install HimigTube as a native app</li>
+        <li><strong>Visual Enhancements:</strong> Implemented elegant white glow effects on buttons and recommendation titles for better visual appeal</li>
+        <li><strong>Typography Improvements:</strong> Enhanced text contrast and readability with optimized color schemes</li>
+        <li><strong>Music Discovery Feature:</strong> Added "🌍 Discover New Music" section featuring curated songs from both popular Filipino artists (Ben&Ben, SB19, BINI, Moira Dela Torre) and global artists (Taylor Swift, Ed Sheeran, BTS, BLACKPINK). Each song displays artist badges to help users explore OPM and international music easily</li>
+      </ul>
+      
+      <p style="margin-top: 20px; font-style: italic; color: #666;">
+        <strong>Bottom line:</strong> HimigTube now feels like it knows your music taste! The more you use it, the better your recommendations become. It's like having a friend who really gets your music vibe! And remember..Music is the way you like it. <br>- Author of HimigTube
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- 🍪 Cookie Notification Banner -->
+<div id="cookieBanner" class="cookie-banner hidden">
+  <div class="cookie-content">
+    <div class="cookie-text">
+      <h4>🍪 Kumusta! Welcome to HimigTube!</h4>
+      <p>Para sa better experience, gumagamit kami ng cookies para ma-remember mo yung preferences mo. Okay lang ba sa'yo? 😊</p>
+    </div>
+    <div class="cookie-buttons">
+      <button id="acceptCookies" class="cookie-btn accept-btn">✅ Sige, okay lang!</button>
+      <button id="declineCookies" class="cookie-btn decline-btn">❌ Hindi na lang</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

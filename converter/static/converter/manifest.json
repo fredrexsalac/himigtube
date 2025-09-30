@@ -1,0 +1,54 @@
+{
+  "name": "HimigTube - Pinoy YouTube to MP3",
+  "short_name": "HimigTube",
+  "description": "Pinoy YouTube to MP3 Downloader - Fast, free, and hassle-free music for Filipino music lovers",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffd1dc",
+  "theme_color": "#ff6b9d",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en-PH",
+  "categories": ["music", "entertainment", "utilities"],
+  "icons": [
+    {
+      "src": "/static/converter/logo/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/converter/logo/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "YouTube to MP3",
+      "short_name": "YouTube",
+      "description": "Convert YouTube videos to MP3",
+      "url": "/?tab=youtube",
+      "icons": [
+        {
+          "src": "/static/converter/logo/logo.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Video to MP3",
+      "short_name": "Video",
+      "description": "Upload and convert video files to MP3",
+      "url": "/?tab=video",
+      "icons": [
+        {
+          "src": "/static/converter/logo/logo.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false
+}
