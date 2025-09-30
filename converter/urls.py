@@ -2,6 +2,10 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 from . import views
+from django.http import HttpResponse
+from django.contrib.sitemaps.views import sitemap
+from . import views
+from .sitemaps import StaticViewSitemap 
 
 app_name = 'converter'
 
@@ -13,11 +17,7 @@ urlpatterns = [
     path('process/', views.process, name='process'),
     path('video-upload/', views.video_upload, name='video_upload'),  # video upload processing
     path('api/search-suggestions/', views.search_suggestions, name='search_suggestions'),  # API for search suggestions
-from django.http import HttpResponse
-from django.contrib.sitemaps.views import sitemap
-from . import views
-from .sitemaps import StaticViewSitemap  # we already made this earlier
-
+]
 app_name = 'converter'
 
 # Google verification
