@@ -56,5 +56,4 @@ urlpatterns = [
 
     # Robots.txt
     path("robots.txt", robots_txt, name="robots"),
->>>>>>> 455186ee1e1999f6a82cd6b814f12b63252e2c70
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
