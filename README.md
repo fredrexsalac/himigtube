@@ -2,7 +2,7 @@
 
 **HimigTube** is a Filipino-themed YouTube to MP3 downloader built using Django + yt-dlp + FFmpeg, designed especially for music lovers who want to convert YouTube songs directly into downloadable MP3 files — all wrapped in a vibrant, Pinoy-inspired experience with hugot feels, loading animations, and progressive processing UI.
 
-> 📅 Released: 2025  
+> 📅 Released: August 13, 2025  
 > 💻 Built by: A Computer Science student from the Philippines  
 > 🛠 Hosted on: Render + GitHub  
 > 🌍 Website: [https://himigtube.render.com](#)
@@ -23,7 +23,11 @@
 
 ---
 
+<<<<<<< HEAD
 ## 🆕 Latest Updates (v2.0)
+=======
+## 🆕 Latest Updates (v1.2)
+>>>>>>> 9fa374110cd555a6c03f63fcb132411716adcb2e
 
 ### 📱 **Progressive Web App (PWA) Enhancement**
 - **Mobile App Installation** - Users can now install HimigTube as a native-like app on their phones
@@ -195,4 +199,8 @@ This updated README.md includes all the major changes we made:
 - ✅ Technical improvements and code structure
 - ✅ Installation guides for PWA
 - ✅ Updated project structure
+<<<<<<< HEAD
 - ✅ Changelog with version history
+=======
+- ✅ Changelog with version history
+>>>>>>> 9fa374110cd555a6c03f63fcb132411716adcb2e
