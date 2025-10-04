@@ -22,12 +22,8 @@
 - 🧭 **Interactive Navigation** - Smooth tab switching with hover effects
 
 ---
-
-<<<<<<< HEAD
-## 🆕 Latest Updates (v2.0)
 =======
 ## 🆕 Latest Updates (v1.2)
->>>>>>> 9fa374110cd555a6c03f63fcb132411716adcb2e
 
 ### 📱 **Progressive Web App (PWA) Enhancement**
 - **Mobile App Installation** - Users can now install HimigTube as a native-like app on their phones
@@ -199,8 +195,3 @@ This updated README.md includes all the major changes we made:
 - ✅ Technical improvements and code structure
 - ✅ Installation guides for PWA
 - ✅ Updated project structure
-<<<<<<< HEAD
-- ✅ Changelog with version history
-=======
-- ✅ Changelog with version history
->>>>>>> 9fa374110cd555a6c03f63fcb132411716adcb2e
